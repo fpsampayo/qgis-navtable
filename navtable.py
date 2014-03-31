@@ -208,7 +208,7 @@ class Navtable:
         # self.table.insertPlainText("FID - " + str(feat.id()))
         # self.table.insertPlainText("\n")
 
-        self.table.setRowCount(len(attrs))
+        self.table.setRowCount(len(attrs) + 2)
 
         
         numFilas = 0
@@ -224,18 +224,22 @@ class Navtable:
             numFilas = numFilas + 1
 
                 
-        # geom = feat.geometry() 
-        # #Insertamos la longitud
-        # campo.setText("length")
-        # valor.setText(str(geom.length()))
-        # self.table.setItem(numFilas + 1, 0, campo)
-        # self.table.setItem(numFilas + 1, 1, valor)
-        # #Comprobamos si es de tipo polygon
-        # if geom.type() == 2:
-        #     campo.setText("area")
-        #     valor.setText(str(geom.area()))      
-        #     self.table.setItem(numFilas + 2, 0, campo)
-        #     self.table.setItem(numFilas + 2, 1, valor)
+        geom = feat.geometry() 
+        #Insertamos la longitud
+        campo = QTableWidgetItem()
+        valor = QTableWidgetItem()
+        campo.setText("length")
+        valor.setText(str(geom.length()))
+        self.table.setItem(numFilas, 0, campo)
+        self.table.setItem(numFilas, 1, valor)
+        #Comprobamos si es de tipo polygon
+        if geom.type() == 2:
+            campo = QTableWidgetItem()
+            valor = QTableWidgetItem()
+            campo.setText("area")
+            valor.setText(str(geom.area()))      
+            self.table.setItem(numFilas + 1, 0, campo)
+            self.table.setItem(numFilas + 1, 1, valor)
 
 
     def checkButtons(self):
