@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_navtable.ui'
 #
-# Created: Mon Mar 31 17:16:36 2014
+# Created: Mon Mar 31 17:28:53 2014
 #      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -35,11 +35,6 @@ class Ui_Navtable(object):
         self.zoomCB = QtGui.QCheckBox(Navtable)
         self.zoomCB.setGeometry(QtCore.QRect(300, 10, 81, 22))
         self.zoomCB.setObjectName(_fromUtf8("zoomCB"))
-        self.table = QtGui.QTextEdit(Navtable)
-        self.table.setEnabled(False)
-        self.table.setGeometry(QtCore.QRect(40, 40, 341, 331))
-        self.table.setReadOnly(True)
-        self.table.setObjectName(_fromUtf8("table"))
         self.lastBT = QtGui.QPushButton(Navtable)
         self.lastBT.setGeometry(QtCore.QRect(310, 390, 31, 27))
         self.lastBT.setObjectName(_fromUtf8("lastBT"))
@@ -96,6 +91,21 @@ class Ui_Navtable(object):
         self.currentFeatLB = QtGui.QLineEdit(self.gridLayoutWidget)
         self.currentFeatLB.setObjectName(_fromUtf8("currentFeatLB"))
         self.gridLayout.addWidget(self.currentFeatLB, 0, 0, 1, 1)
+        self.attrsTable = QtGui.QTableWidget(Navtable)
+        self.attrsTable.setGeometry(QtCore.QRect(20, 40, 371, 341))
+        self.attrsTable.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
+        self.attrsTable.setObjectName(_fromUtf8("attrsTable"))
+        self.attrsTable.setColumnCount(2)
+        self.attrsTable.setRowCount(0)
+        item = QtGui.QTableWidgetItem()
+        self.attrsTable.setHorizontalHeaderItem(0, item)
+        item = QtGui.QTableWidgetItem()
+        self.attrsTable.setHorizontalHeaderItem(1, item)
+        self.attrsTable.horizontalHeader().setVisible(True)
+        self.attrsTable.horizontalHeader().setCascadingSectionResizes(False)
+        self.attrsTable.horizontalHeader().setSortIndicatorShown(True)
+        self.attrsTable.horizontalHeader().setStretchLastSection(True)
+        self.attrsTable.verticalHeader().setStretchLastSection(False)
 
         self.retranslateUi(Navtable)
         QtCore.QMetaObject.connectSlotsByName(Navtable)
@@ -115,4 +125,9 @@ class Ui_Navtable(object):
         self.pushButton_3.setText(_translate("Navtable", "Delete", None))
         self.nFeatLB.setText(_translate("Navtable", "0", None))
         self.label.setText(_translate("Navtable", "/", None))
+        self.attrsTable.setSortingEnabled(False)
+        item = self.attrsTable.horizontalHeaderItem(0)
+        item.setText(_translate("Navtable", "campo", None))
+        item = self.attrsTable.horizontalHeaderItem(1)
+        item.setText(_translate("Navtable", "valor", None))
 

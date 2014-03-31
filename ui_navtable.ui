@@ -51,22 +51,6 @@
     <string>Zoom</string>
    </property>
   </widget>
-  <widget class="QTextEdit" name="table">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>40</y>
-     <width>341</width>
-     <height>331</height>
-    </rect>
-   </property>
-   <property name="readOnly">
-    <bool>true</bool>
-   </property>
-  </widget>
   <widget class="QPushButton" name="lastBT">
    <property name="geometry">
     <rect>
@@ -246,6 +230,47 @@
      <widget class="QLineEdit" name="currentFeatLB"/>
     </item>
    </layout>
+  </widget>
+  <widget class="QTableWidget" name="attrsTable">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>40</y>
+     <width>371</width>
+     <height>341</height>
+    </rect>
+   </property>
+   <property name="selectionMode">
+    <enum>QAbstractItemView::SingleSelection</enum>
+   </property>
+   <property name="sortingEnabled">
+    <bool>false</bool>
+   </property>
+   <attribute name="horizontalHeaderVisible">
+    <bool>true</bool>
+   </attribute>
+   <attribute name="horizontalHeaderCascadingSectionResizes">
+    <bool>false</bool>
+   </attribute>
+   <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+    <bool>true</bool>
+   </attribute>
+   <attribute name="horizontalHeaderStretchLastSection">
+    <bool>true</bool>
+   </attribute>
+   <attribute name="verticalHeaderStretchLastSection">
+    <bool>false</bool>
+   </attribute>
+   <column>
+    <property name="text">
+     <string>campo</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>valor</string>
+    </property>
+   </column>
   </widget>
  </widget>
  <resources/>

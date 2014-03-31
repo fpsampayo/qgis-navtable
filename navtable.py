@@ -76,7 +76,7 @@ class Navtable:
         self.iface.removeToolBarIcon(self.action)
 
     def run(self):
-        self.table = self.dlg.ui.table
+        self.table = self.dlg.ui.attrsTable
         self.layer = self.iface.activeLayer()
 
         #Comprobamos si existe alguna capa y si esta es vectorial
@@ -201,23 +201,42 @@ class Navtable:
 
 
     def printIt(self, feat):
-        self.table.setText("")
+        #self.table.setText("")
         attrs = feat.attributes()
 
         #Insertamos el FID de la geometria
-        self.table.insertPlainText("FID - " + str(feat.id()))
-        self.table.insertPlainText("\n")
+        # self.table.insertPlainText("FID - " + str(feat.id()))
+        # self.table.insertPlainText("\n")
 
-        for n, v in enumerate(attrs):
-            self.table.insertPlainText("%s - %s"%(self.layer.attributeDisplayName(n), v))
-            self.table.insertPlainText("\n")
+        self.table.setRowCount(len(attrs))
+
         
-        geom = feat.geometry()    
-        self.table.insertPlainText("%s - %f"%("length", geom.length()))
-        #Comprobamos si es de tipo polygon
-        if geom.type() == 2:
-            self.table.insertPlainText("\n")
-            self.table.insertPlainText("%s - %f"%("area", geom.area())) 
+        numFilas = 0
+        for n, v in enumerate(attrs):
+            campo = QTableWidgetItem()
+            valor = QTableWidgetItem()
+            campo.setText(self.layer.attributeDisplayName(n))
+            valor.setText(v)
+
+            self.table.setItem(numFilas, 0, campo)
+            self.table.setItem(numFilas, 1, valor)
+
+            numFilas = numFilas + 1
+
+                
+        # geom = feat.geometry() 
+        # #Insertamos la longitud
+        # campo.setText("length")
+        # valor.setText(str(geom.length()))
+        # self.table.setItem(numFilas + 1, 0, campo)
+        # self.table.setItem(numFilas + 1, 1, valor)
+        # #Comprobamos si es de tipo polygon
+        # if geom.type() == 2:
+        #     campo.setText("area")
+        #     valor.setText(str(geom.area()))      
+        #     self.table.setItem(numFilas + 2, 0, campo)
+        #     self.table.setItem(numFilas + 2, 1, valor)
+
 
     def checkButtons(self):
 
