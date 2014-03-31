@@ -27,7 +27,6 @@ import resources_rc
 # Import the code for the dialog
 from navtabledialog import NavtableDialog
 import os.path
-import math
 
 
 class Navtable:
@@ -79,20 +78,26 @@ class Navtable:
     def run(self):
         self.table = self.dlg.ui.table
         self.layer = self.iface.activeLayer()
-        self.currentFid = 0
-        feat = self.getFeature(self.currentFid)
-        if not feat:
-            print "Empty layer"
 
-        self.dlg.ui.nFeatLB.setText(str(self.layer.featureCount()))
-        self.updateNFeatLB()
-        self.printIt(feat)
-        self.dlg.show()
+        #Comprobamos si existe alguna capa y si esta es vectorial
+        if self.layer == None or not isinstance(self.layer, QgsVectorLayer):
+            QMessageBox.information(None, "Aviso", u"NavTable necesita una capa vectorial para funcionar.")
+        else:
+            self.currentFid = 0
+            feat = self.getFeature(self.currentFid)
+            if not feat:
+                print "Empty layer"
 
-        result = self.dlg.exec_()
-        # See if OK was pressed
-        if result == 1:
-            pass
+            self.dlg.ui.nFeatLB.setText(str(self.layer.featureCount()))
+            self.dlg.setWindowTitle('NavTable - Capa: ' + self.layer.name())
+            self.updateNFeatLB()
+            self.printIt(feat)
+            self.dlg.show()
+
+            result = self.dlg.exec_()
+            # See if OK was pressed
+            if result == 1:
+                pass
 
 
 
@@ -155,29 +160,15 @@ class Navtable:
         
 
     def panTo(self, newCenter):
-        '''
-        newCenter is QgsPoint geometry
-        Taked from: http://svn.reprojected.com/qgisplugins/trunk/refmap/refmap.py
-        '''
+
         newCenterPoint = newCenter.asPoint()
-        currentExtent = self.iface.mapCanvas().extent()
-        currentCenter = currentExtent.center()
-        dx = math.fabs(newCenterPoint.x() - currentCenter.x())
-        dy = math.fabs(newCenterPoint.y() - currentCenter.y())
-        if (newCenterPoint.x() > currentCenter.x()):
-            currentExtent.setXMinimum( currentExtent.xMinimum() + dx )
-            currentExtent.setXMaximum( currentExtent.xMaximum() + dx )
-        else:
-            currentExtent.setXMinimum( currentExtent.xMinimum() - dx )
-            currentExtent.setXMaximum( currentExtent.xMaximum() - dx )
-        if (newCenterPoint.y() > currentCenter.y()):
-            currentExtent.setYMaximum( currentExtent.yMaximum() + dy )
-            currentExtent.setYMinimum( currentExtent.yMinimum() + dy )
-        else:
-            currentExtent.setYMaximum( currentExtent.yMaximum() - dy )
-            currentExtent.setYMinimum( currentExtent.yMinimum() - dy )
-        self.iface.mapCanvas().setExtent(currentExtent)
-        self.iface.mapCanvas().refresh()
+        canvas = self.iface.mapCanvas()
+        scale = canvas.scale()
+        rect = QgsRectangle(float(newCenterPoint.x())-20,float(newCenterPoint.y())-20,float(newCenterPoint.x())+20,float(newCenterPoint.y())+20)
+        canvas.setExtent(rect)
+        canvas.zoomScale(scale)
+
+        canvas.refresh()
             
     def has_to_pan(self):
         return self.dlg.ui.panCB.isChecked()
@@ -196,7 +187,9 @@ class Navtable:
         if self.layer.getFeatures( QgsFeatureRequest().setFilterFid( fid ) ).nextFeature( feat ):
             return feat
         else:
-            return False
+            #return False
+            return feat
+
 
     def printIt(self, feat):
         self.table.setText("")
@@ -205,8 +198,10 @@ class Navtable:
         for n, v in enumerate(attrs):
             self.table.insertPlainText("%s - %s"%(self.layer.attributeDisplayName(n), v))
             self.table.insertPlainText("\n")
-        #TODO: only show length for lines and area for polygons
+        
         geom = feat.geometry()    
         self.table.insertPlainText("%s - %f"%("length", geom.length()))
-        self.table.insertPlainText("\n")
-        self.table.insertPlainText("%s - %f"%("area", geom.area())) 
+        #Comprobamos si es de tipo polygon
+        if geom.type() == 2:
+            self.table.insertPlainText("\n")
+            self.table.insertPlainText("%s - %f"%("area", geom.area())) 
