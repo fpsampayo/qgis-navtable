@@ -10,6 +10,18 @@
     <height>502</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>406</width>
+    <height>502</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>406</width>
+    <height>502</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>Navtable</string>
   </property>
@@ -69,6 +81,9 @@
    </property>
   </widget>
   <widget class="QPushButton" name="nextBT">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>260</x>
@@ -79,6 +94,9 @@
    </property>
    <property name="text">
     <string>&gt;</string>
+   </property>
+   <property name="checkable">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QPushButton" name="previousBT">
@@ -105,42 +123,6 @@
    </property>
    <property name="text">
     <string>&lt;&lt;</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="nFeatLB">
-   <property name="geometry">
-    <rect>
-     <x>230</x>
-     <y>400</y>
-     <width>31</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>0</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="currentFeatLB">
-   <property name="geometry">
-    <rect>
-     <x>160</x>
-     <y>400</y>
-     <width>41</width>
-     <height>27</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>210</x>
-     <y>400</y>
-     <width>16</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>/</string>
    </property>
   </widget>
   <widget class="QCheckBox" name="onlySelectedCB">
@@ -225,6 +207,45 @@
    <property name="text">
     <string>Delete</string>
    </property>
+  </widget>
+  <widget class="QWidget" name="gridLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>390</y>
+     <width>81</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="2">
+     <widget class="QLabel" name="nFeatLB">
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>0</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLabel" name="label">
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>/</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLineEdit" name="currentFeatLB"/>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>

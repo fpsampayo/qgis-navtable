@@ -83,7 +83,9 @@ class Navtable:
         if self.layer == None or not isinstance(self.layer, QgsVectorLayer):
             QMessageBox.information(None, "Aviso", u"NavTable necesita una capa vectorial para funcionar.")
         else:
-            self.currentFid = 0
+            self.allIds = self.layer.allFeatureIds()
+            self.currentIndexFid = 0
+            self.currentFid = self.allIds[self.currentIndexFid]
             feat = self.getFeature(self.currentFid)
             if not feat:
                 print "Empty layer"
@@ -92,6 +94,7 @@ class Navtable:
             self.dlg.setWindowTitle('NavTable - Capa: ' + self.layer.name())
             self.updateNFeatLB()
             self.printIt(feat)
+            self.checkButtons()
             self.dlg.show()
 
             result = self.dlg.exec_()
@@ -110,35 +113,41 @@ class Navtable:
         print "zoom: " + str(self.has_to_zoom())
 
     def next(self):
-        newFid = self.currentFid + 1
+        newIndex = self.currentIndexFid + 1
+        newFid = self.allIds[newIndex]
         msg = "No more features - Disable next and last buttons"
-        self.update(newFid, msg)
+        self.update(newFid, newIndex, msg)
         
     def previous(self):
-        newFid = self.currentFid - 1
+        newIndex = self.currentIndexFid - 1
+        newFid = self.allIds[newIndex]
         msg = "No more features - Disable previous and first buttons"
-        self.update(newFid, msg)
+        self.update(newFid, newIndex, msg)
 
     def last(self):
-        newFid = self.layer.featureCount() -1
+        newIndex = len(self.allIds) - 1
+        newFid = self.allIds[newIndex]
         msg = "Error. Should never happen"
-        self.update(newFid, msg)
+        self.update(newFid, newIndex, msg)
 
     def first(self):
-        newFid = 0
+        newIndex = 0
+        newFid = self.allIds[newIndex]
         msg = "Error. Error"
-        self.update(newFid, msg)
+        self.update(newFid, newIndex, msg)
         
     
-    def update(self, newFid, msg):
+    def update(self, newFid, newIndex, msg):
         feat = self.getFeature(newFid)
         if not feat:
             print msg
             return
+        self.currentIndexFid = newIndex
         self.currentFid = newFid
         self.updateNFeatLB()
         self.updateCanvas(feat)
         self.printIt(feat)
+        self.checkButtons()
         
     def updateCanvas(self, feat):
         if self.has_to_select():
@@ -180,7 +189,7 @@ class Navtable:
         return self.dlg.ui.selectCB.isChecked()
 
     def updateNFeatLB(self):
-        self.dlg.ui.currentFeatLB.setText(str(self.currentFid + 1))
+        self.dlg.ui.currentFeatLB.setText(str(self.currentIndexFid + 1))
 
     def getFeature(self, fid):
         feat = QgsFeature()
@@ -195,6 +204,10 @@ class Navtable:
         self.table.setText("")
         attrs = feat.attributes()
 
+        #Insertamos el FID de la geometria
+        self.table.insertPlainText("FID - " + str(feat.id()))
+        self.table.insertPlainText("\n")
+
         for n, v in enumerate(attrs):
             self.table.insertPlainText("%s - %s"%(self.layer.attributeDisplayName(n), v))
             self.table.insertPlainText("\n")
@@ -205,3 +218,19 @@ class Navtable:
         if geom.type() == 2:
             self.table.insertPlainText("\n")
             self.table.insertPlainText("%s - %f"%("area", geom.area())) 
+
+    def checkButtons(self):
+
+        if self.currentIndexFid == len(self.allIds) - 1:
+            self.dlg.ui.nextBT.setEnabled(False)
+            self.dlg.ui.lastBT.setEnabled(False)
+        else:
+            self.dlg.ui.nextBT.setEnabled(True)
+            self.dlg.ui.lastBT.setEnabled(True)
+
+        if self.currentIndexFid == 0:
+            self.dlg.ui.previousBT.setEnabled(False)
+            self.dlg.ui.firstBT.setEnabled(False)
+        else:
+            self.dlg.ui.previousBT.setEnabled(True)
+            self.dlg.ui.firstBT.setEnabled(True)

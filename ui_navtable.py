@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ui_navtable.ui'
 #
-# Created: Sun Dec  8 17:03:18 2013
-#      by: PyQt4 UI code generator 4.10
+# Created: Mon Mar 31 17:16:36 2014
+#      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -27,6 +27,8 @@ class Ui_Navtable(object):
     def setupUi(self, Navtable):
         Navtable.setObjectName(_fromUtf8("Navtable"))
         Navtable.resize(406, 502)
+        Navtable.setMinimumSize(QtCore.QSize(406, 502))
+        Navtable.setMaximumSize(QtCore.QSize(406, 502))
         self.panCB = QtGui.QCheckBox(Navtable)
         self.panCB.setGeometry(QtCore.QRect(40, 10, 61, 22))
         self.panCB.setObjectName(_fromUtf8("panCB"))
@@ -42,7 +44,9 @@ class Ui_Navtable(object):
         self.lastBT.setGeometry(QtCore.QRect(310, 390, 31, 27))
         self.lastBT.setObjectName(_fromUtf8("lastBT"))
         self.nextBT = QtGui.QPushButton(Navtable)
+        self.nextBT.setEnabled(True)
         self.nextBT.setGeometry(QtCore.QRect(260, 390, 31, 27))
+        self.nextBT.setCheckable(False)
         self.nextBT.setObjectName(_fromUtf8("nextBT"))
         self.previousBT = QtGui.QPushButton(Navtable)
         self.previousBT.setGeometry(QtCore.QRect(110, 390, 31, 27))
@@ -50,15 +54,6 @@ class Ui_Navtable(object):
         self.firstBT = QtGui.QPushButton(Navtable)
         self.firstBT.setGeometry(QtCore.QRect(60, 390, 31, 27))
         self.firstBT.setObjectName(_fromUtf8("firstBT"))
-        self.nFeatLB = QtGui.QLabel(Navtable)
-        self.nFeatLB.setGeometry(QtCore.QRect(230, 400, 31, 17))
-        self.nFeatLB.setObjectName(_fromUtf8("nFeatLB"))
-        self.currentFeatLB = QtGui.QLineEdit(Navtable)
-        self.currentFeatLB.setGeometry(QtCore.QRect(160, 400, 41, 27))
-        self.currentFeatLB.setObjectName(_fromUtf8("currentFeatLB"))
-        self.label = QtGui.QLabel(Navtable)
-        self.label.setGeometry(QtCore.QRect(210, 400, 16, 17))
-        self.label.setObjectName(_fromUtf8("label"))
         self.onlySelectedCB = QtGui.QCheckBox(Navtable)
         self.onlySelectedCB.setEnabled(False)
         self.onlySelectedCB.setGeometry(QtCore.QRect(170, 10, 121, 22))
@@ -80,6 +75,27 @@ class Ui_Navtable(object):
         self.pushButton_3.setEnabled(False)
         self.pushButton_3.setGeometry(QtCore.QRect(40, 430, 98, 27))
         self.pushButton_3.setObjectName(_fromUtf8("pushButton_3"))
+        self.gridLayoutWidget = QtGui.QWidget(Navtable)
+        self.gridLayoutWidget.setGeometry(QtCore.QRect(160, 390, 81, 31))
+        self.gridLayoutWidget.setObjectName(_fromUtf8("gridLayoutWidget"))
+        self.gridLayout = QtGui.QGridLayout(self.gridLayoutWidget)
+        self.gridLayout.setMargin(0)
+        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
+        self.nFeatLB = QtGui.QLabel(self.gridLayoutWidget)
+        font = QtGui.QFont()
+        font.setPointSize(8)
+        self.nFeatLB.setFont(font)
+        self.nFeatLB.setObjectName(_fromUtf8("nFeatLB"))
+        self.gridLayout.addWidget(self.nFeatLB, 0, 2, 1, 1)
+        self.label = QtGui.QLabel(self.gridLayoutWidget)
+        font = QtGui.QFont()
+        font.setPointSize(8)
+        self.label.setFont(font)
+        self.label.setObjectName(_fromUtf8("label"))
+        self.gridLayout.addWidget(self.label, 0, 1, 1, 1)
+        self.currentFeatLB = QtGui.QLineEdit(self.gridLayoutWidget)
+        self.currentFeatLB.setObjectName(_fromUtf8("currentFeatLB"))
+        self.gridLayout.addWidget(self.currentFeatLB, 0, 0, 1, 1)
 
         self.retranslateUi(Navtable)
         QtCore.QMetaObject.connectSlotsByName(Navtable)
@@ -92,11 +108,11 @@ class Ui_Navtable(object):
         self.nextBT.setText(_translate("Navtable", ">", None))
         self.previousBT.setText(_translate("Navtable", "<", None))
         self.firstBT.setText(_translate("Navtable", "<<", None))
-        self.nFeatLB.setText(_translate("Navtable", "0", None))
-        self.label.setText(_translate("Navtable", "/", None))
         self.onlySelectedCB.setText(_translate("Navtable", "Only Selected", None))
         self.selectCB.setText(_translate("Navtable", "Select", None))
         self.pushButton.setText(_translate("Navtable", "Save", None))
         self.pushButton_2.setText(_translate("Navtable", "Copy Previous", None))
         self.pushButton_3.setText(_translate("Navtable", "Delete", None))
+        self.nFeatLB.setText(_translate("Navtable", "0", None))
+        self.label.setText(_translate("Navtable", "/", None))
 
