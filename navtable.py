@@ -79,6 +79,8 @@ class Navtable:
         self.table = self.dlg.ui.attrsTable
         self.layer = self.iface.activeLayer()
 
+        
+
         #Comprobamos si existe alguna capa y si esta es vectorial
         if self.layer == None or not isinstance(self.layer, QgsVectorLayer):
             QMessageBox.information(None, "Aviso", u"NavTable necesita una capa vectorial para funcionar.")
@@ -113,29 +115,32 @@ class Navtable:
         print "zoom: " + str(self.has_to_zoom())
 
     def next(self):
+        self.guardarDatos(self.currentFid)
         newIndex = self.currentIndexFid + 1
         newFid = self.allIds[newIndex]
         msg = "No more features - Disable next and last buttons"
         self.update(newFid, newIndex, msg)
         
     def previous(self):
+        self.guardarDatos(self.currentFid)
         newIndex = self.currentIndexFid - 1
         newFid = self.allIds[newIndex]
         msg = "No more features - Disable previous and first buttons"
         self.update(newFid, newIndex, msg)
 
     def last(self):
+        self.guardarDatos(self.currentFid)
         newIndex = len(self.allIds) - 1
         newFid = self.allIds[newIndex]
         msg = "Error. Should never happen"
         self.update(newFid, newIndex, msg)
 
     def first(self):
+        self.guardarDatos(self.currentFid)
         newIndex = 0
         newFid = self.allIds[newIndex]
         msg = "Error. Error"
-        self.update(newFid, newIndex, msg)
-        
+        self.update(newFid, newIndex, msg)        
     
     def update(self, newFid, newIndex, msg):
         feat = self.getFeature(newFid)
@@ -209,14 +214,13 @@ class Navtable:
         # self.table.insertPlainText("\n")
 
         self.table.setRowCount(len(attrs) + 2)
-
         
         numFilas = 0
         for n, v in enumerate(attrs):
             campo = QTableWidgetItem()
             valor = QTableWidgetItem()
             campo.setText(self.layer.attributeDisplayName(n))
-            valor.setText(v)
+            valor.setText(str(v))
 
             self.table.setItem(numFilas, 0, campo)
             self.table.setItem(numFilas, 1, valor)
@@ -242,6 +246,7 @@ class Navtable:
             self.table.setItem(numFilas + 1, 1, valor)
 
 
+
     def checkButtons(self):
 
         if self.currentIndexFid == len(self.allIds) - 1:
@@ -257,3 +262,21 @@ class Navtable:
         else:
             self.dlg.ui.previousBT.setEnabled(True)
             self.dlg.ui.firstBT.setEnabled(True)
+
+    '''
+    This method generates a dict ready to update the feature attributes
+    '''
+    def guardarDatos(self, fid):
+
+        if self.layer.isEditable():
+            caps = self.layer.dataProvider().capabilities()
+
+            newAttrs = {}
+            for r in range(self.table.rowCount() - 2):
+                for c in range(self.table.columnCount()):
+                    newAttrs[r] = self.table.item(r, c).data(0)
+            #print newAttrs
+
+            if caps & QgsVectorDataProvider.ChangeAttributeValues:
+                self.layer.dataProvider().changeAttributeValues({ fid : newAttrs })
+
