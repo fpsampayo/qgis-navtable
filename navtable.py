@@ -27,7 +27,7 @@ import resources_rc
 # Import the code for the dialog
 from navtabledialog import NavtableDialog
 import os.path
-
+import math
 
 class Navtable:
 
@@ -174,15 +174,29 @@ class Navtable:
         
 
     def panTo(self, newCenter):
-
+        '''
+        newCenter is QgsPoint geometry
+        Taked from: http://svn.reprojected.com/qgisplugins/trunk/refmap/refmap.py
+        '''
         newCenterPoint = newCenter.asPoint()
-        canvas = self.iface.mapCanvas()
-        scale = canvas.scale()
-        rect = QgsRectangle(float(newCenterPoint.x())-20,float(newCenterPoint.y())-20,float(newCenterPoint.x())+20,float(newCenterPoint.y())+20)
-        canvas.setExtent(rect)
-        canvas.zoomScale(scale)
-
-        canvas.refresh()
+        currentExtent = self.iface.mapCanvas().extent()
+        currentCenter = currentExtent.center()
+        dx = math.fabs(newCenterPoint.x() - currentCenter.x())
+        dy = math.fabs(newCenterPoint.y() - currentCenter.y())
+        if (newCenterPoint.x() > currentCenter.x()):
+            currentExtent.setXMinimum( currentExtent.xMinimum() + dx )
+            currentExtent.setXMaximum( currentExtent.xMaximum() + dx )
+        else:
+            currentExtent.setXMinimum( currentExtent.xMinimum() - dx )
+            currentExtent.setXMaximum( currentExtent.xMaximum() - dx )
+        if (newCenterPoint.y() > currentCenter.y()):
+            currentExtent.setYMaximum( currentExtent.yMaximum() + dy )
+            currentExtent.setYMinimum( currentExtent.yMinimum() + dy )
+        else:
+            currentExtent.setYMaximum( currentExtent.yMaximum() - dy )
+            currentExtent.setYMinimum( currentExtent.yMinimum() - dy )
+        self.iface.mapCanvas().setExtent(currentExtent)
+        self.iface.mapCanvas().refresh()
             
     def has_to_pan(self):
         return self.dlg.ui.panCB.isChecked()
