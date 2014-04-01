@@ -54,9 +54,9 @@
   <widget class="QPushButton" name="lastBT">
    <property name="geometry">
     <rect>
-     <x>300</x>
+     <x>325</x>
      <y>470</y>
-     <width>31</width>
+     <width>30</width>
      <height>27</height>
     </rect>
    </property>
@@ -70,9 +70,9 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>250</x>
+     <x>275</x>
      <y>470</y>
-     <width>31</width>
+     <width>30</width>
      <height>27</height>
     </rect>
    </property>
@@ -86,9 +86,9 @@
   <widget class="QPushButton" name="previousBT">
    <property name="geometry">
     <rect>
-     <x>100</x>
+     <x>95</x>
      <y>470</y>
-     <width>31</width>
+     <width>30</width>
      <height>27</height>
     </rect>
    </property>
@@ -99,9 +99,9 @@
   <widget class="QPushButton" name="firstBT">
    <property name="geometry">
     <rect>
-     <x>50</x>
+     <x>45</x>
      <y>470</y>
-     <width>31</width>
+     <width>30</width>
      <height>27</height>
     </rect>
    </property>
@@ -150,9 +150,9 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>270</x>
+     <x>275</x>
      <y>510</y>
-     <width>98</width>
+     <width>100</width>
      <height>27</height>
     </rect>
    </property>
@@ -166,9 +166,9 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>140</x>
+     <x>150</x>
      <y>510</y>
-     <width>101</width>
+     <width>100</width>
      <height>27</height>
     </rect>
    </property>
@@ -182,9 +182,9 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>30</x>
+     <x>25</x>
      <y>510</y>
-     <width>98</width>
+     <width>100</width>
      <height>27</height>
     </rect>
    </property>
@@ -195,7 +195,7 @@
   <widget class="QWidget" name="gridLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>150</x>
+     <x>160</x>
      <y>470</y>
      <width>81</width>
      <height>31</height>
