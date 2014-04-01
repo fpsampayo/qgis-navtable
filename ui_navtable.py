@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_navtable.ui'
 #
-# Created: Mon Mar 31 17:28:53 2014
+# Created: Tue Apr 01 13:37:06 2014
 #      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,9 +26,9 @@ except AttributeError:
 class Ui_Navtable(object):
     def setupUi(self, Navtable):
         Navtable.setObjectName(_fromUtf8("Navtable"))
-        Navtable.resize(406, 502)
-        Navtable.setMinimumSize(QtCore.QSize(406, 502))
-        Navtable.setMaximumSize(QtCore.QSize(406, 502))
+        Navtable.resize(400, 550)
+        Navtable.setMinimumSize(QtCore.QSize(400, 550))
+        Navtable.setMaximumSize(QtCore.QSize(400, 550))
         self.panCB = QtGui.QCheckBox(Navtable)
         self.panCB.setGeometry(QtCore.QRect(40, 10, 61, 22))
         self.panCB.setObjectName(_fromUtf8("panCB"))
@@ -36,18 +36,18 @@ class Ui_Navtable(object):
         self.zoomCB.setGeometry(QtCore.QRect(300, 10, 81, 22))
         self.zoomCB.setObjectName(_fromUtf8("zoomCB"))
         self.lastBT = QtGui.QPushButton(Navtable)
-        self.lastBT.setGeometry(QtCore.QRect(310, 390, 31, 27))
+        self.lastBT.setGeometry(QtCore.QRect(300, 470, 31, 27))
         self.lastBT.setObjectName(_fromUtf8("lastBT"))
         self.nextBT = QtGui.QPushButton(Navtable)
         self.nextBT.setEnabled(True)
-        self.nextBT.setGeometry(QtCore.QRect(260, 390, 31, 27))
+        self.nextBT.setGeometry(QtCore.QRect(250, 470, 31, 27))
         self.nextBT.setCheckable(False)
         self.nextBT.setObjectName(_fromUtf8("nextBT"))
         self.previousBT = QtGui.QPushButton(Navtable)
-        self.previousBT.setGeometry(QtCore.QRect(110, 390, 31, 27))
+        self.previousBT.setGeometry(QtCore.QRect(100, 470, 31, 27))
         self.previousBT.setObjectName(_fromUtf8("previousBT"))
         self.firstBT = QtGui.QPushButton(Navtable)
-        self.firstBT.setGeometry(QtCore.QRect(60, 390, 31, 27))
+        self.firstBT.setGeometry(QtCore.QRect(50, 470, 31, 27))
         self.firstBT.setObjectName(_fromUtf8("firstBT"))
         self.onlySelectedCB = QtGui.QCheckBox(Navtable)
         self.onlySelectedCB.setEnabled(False)
@@ -60,18 +60,18 @@ class Ui_Navtable(object):
         self.selectCB.setObjectName(_fromUtf8("selectCB"))
         self.pushButton = QtGui.QPushButton(Navtable)
         self.pushButton.setEnabled(False)
-        self.pushButton.setGeometry(QtCore.QRect(280, 430, 98, 27))
+        self.pushButton.setGeometry(QtCore.QRect(270, 510, 98, 27))
         self.pushButton.setObjectName(_fromUtf8("pushButton"))
         self.pushButton_2 = QtGui.QPushButton(Navtable)
         self.pushButton_2.setEnabled(False)
-        self.pushButton_2.setGeometry(QtCore.QRect(150, 430, 101, 27))
+        self.pushButton_2.setGeometry(QtCore.QRect(140, 510, 101, 27))
         self.pushButton_2.setObjectName(_fromUtf8("pushButton_2"))
         self.pushButton_3 = QtGui.QPushButton(Navtable)
         self.pushButton_3.setEnabled(False)
-        self.pushButton_3.setGeometry(QtCore.QRect(40, 430, 98, 27))
+        self.pushButton_3.setGeometry(QtCore.QRect(30, 510, 98, 27))
         self.pushButton_3.setObjectName(_fromUtf8("pushButton_3"))
         self.gridLayoutWidget = QtGui.QWidget(Navtable)
-        self.gridLayoutWidget.setGeometry(QtCore.QRect(160, 390, 81, 31))
+        self.gridLayoutWidget.setGeometry(QtCore.QRect(150, 470, 81, 31))
         self.gridLayoutWidget.setObjectName(_fromUtf8("gridLayoutWidget"))
         self.gridLayout = QtGui.QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setMargin(0)
@@ -92,7 +92,8 @@ class Ui_Navtable(object):
         self.currentFeatLB.setObjectName(_fromUtf8("currentFeatLB"))
         self.gridLayout.addWidget(self.currentFeatLB, 0, 0, 1, 1)
         self.attrsTable = QtGui.QTableWidget(Navtable)
-        self.attrsTable.setGeometry(QtCore.QRect(20, 40, 371, 341))
+        self.attrsTable.setGeometry(QtCore.QRect(10, 40, 381, 421))
+        self.attrsTable.setAlternatingRowColors(True)
         self.attrsTable.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
         self.attrsTable.setObjectName(_fromUtf8("attrsTable"))
         self.attrsTable.setColumnCount(2)

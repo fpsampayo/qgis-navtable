@@ -220,7 +220,9 @@ class Navtable:
             campo = QTableWidgetItem()
             valor = QTableWidgetItem()
             campo.setText(self.layer.attributeDisplayName(n))
-            valor.setText(str(v))
+            valor.setText(unicode(v))
+
+            campo.setFlags( Qt.ItemIsSelectable |  Qt.ItemIsEnabled )
 
             self.table.setItem(numFilas, 0, campo)
             self.table.setItem(numFilas, 1, valor)
@@ -234,6 +236,9 @@ class Navtable:
         valor = QTableWidgetItem()
         campo.setText("length")
         valor.setText(str(geom.length()))
+
+        campo.setFlags( Qt.ItemIsSelectable |  Qt.ItemIsEnabled )
+
         self.table.setItem(numFilas, 0, campo)
         self.table.setItem(numFilas, 1, valor)
         #Comprobamos si es de tipo polygon
@@ -241,7 +246,10 @@ class Navtable:
             campo = QTableWidgetItem()
             valor = QTableWidgetItem()
             campo.setText("area")
-            valor.setText(str(geom.area()))      
+            valor.setText(str(geom.area()))   
+
+            campo.setFlags( Qt.ItemIsSelectable |  Qt.ItemIsEnabled )
+
             self.table.setItem(numFilas + 1, 0, campo)
             self.table.setItem(numFilas + 1, 1, valor)
 
