@@ -1,3 +1,5 @@
+# -*- coding: utf8 -*-
+
 """
 /***************************************************************************
  Navtable
@@ -85,7 +87,15 @@ class Navtable:
         if self.layer == None or not isinstance(self.layer, QgsVectorLayer):
             QMessageBox.information(None, "Aviso", u"NavTable necesita una capa vectorial para funcionar.")
         else:
+            # Lógica para poder ordenar los registros según un atributo
+            # featureRequest = QgsFeatureRequest()
+            # featureRequest.addOrderBy("parroquia", True)
+            # feats = self.layer.getFeatures(featureRequest)
+            # self.allIds = [f.id() for f in feats]
+            # Lógica para poder ordenar los registros según un atributo
+
             self.allIds = self.layer.allFeatureIds()
+            print self.allIds
             self.currentIndexFid = 0
             self.currentFid = self.allIds[self.currentIndexFid]
             feat = self.getFeature(self.currentFid)
