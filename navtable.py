@@ -1,3 +1,5 @@
+# -*- coding: utf8 -*-
+
 """
 /***************************************************************************
  Navtable
@@ -28,7 +30,6 @@ import resources_rc
 from navtabledialog import NavtableDialog
 import os.path
 import math
-
 
 class Navtable:
 
@@ -77,22 +78,41 @@ class Navtable:
         self.iface.removeToolBarIcon(self.action)
 
     def run(self):
-        self.table = self.dlg.ui.table
+        self.table = self.dlg.ui.attrsTable
         self.layer = self.iface.activeLayer()
-        self.currentFid = 0
-        feat = self.getFeature(self.currentFid)
-        if not feat:
-            print "Empty layer"
 
-        self.dlg.ui.nFeatLB.setText(str(self.layer.featureCount()))
-        self.updateNFeatLB()
-        self.printIt(feat)
-        self.dlg.show()
+        
 
-        result = self.dlg.exec_()
-        # See if OK was pressed
-        if result == 1:
-            pass
+        #Comprobamos si existe alguna capa y si esta es vectorial
+        if self.layer == None or not isinstance(self.layer, QgsVectorLayer):
+            QMessageBox.information(None, "Aviso", u"NavTable necesita una capa vectorial para funcionar.")
+        else:
+            # Lógica para poder ordenar los registros según un atributo
+            # featureRequest = QgsFeatureRequest()
+            # featureRequest.addOrderBy("parroquia", True)
+            # feats = self.layer.getFeatures(featureRequest)
+            # self.allIds = [f.id() for f in feats]
+            # Lógica para poder ordenar los registros según un atributo
+
+            self.allIds = self.layer.allFeatureIds()
+            print self.allIds
+            self.currentIndexFid = 0
+            self.currentFid = self.allIds[self.currentIndexFid]
+            feat = self.getFeature(self.currentFid)
+            if not feat:
+                print "Empty layer"
+
+            self.dlg.ui.nFeatLB.setText(str(self.layer.featureCount()))
+            self.dlg.setWindowTitle('NavTable - Capa: ' + self.layer.name())
+            self.updateNFeatLB()
+            self.printIt(feat)
+            self.checkButtons()
+            self.dlg.show()
+
+            result = self.dlg.exec_()
+            # See if OK was pressed
+            if result == 1:
+                pass
 
 
 
@@ -105,35 +125,44 @@ class Navtable:
         print "zoom: " + str(self.has_to_zoom())
 
     def next(self):
-        newFid = self.currentFid + 1
+        self.guardarDatos(self.currentFid)
+        newIndex = self.currentIndexFid + 1
+        newFid = self.allIds[newIndex]
         msg = "No more features - Disable next and last buttons"
-        self.update(newFid, msg)
+        self.update(newFid, newIndex, msg)
         
     def previous(self):
-        newFid = self.currentFid - 1
+        self.guardarDatos(self.currentFid)
+        newIndex = self.currentIndexFid - 1
+        newFid = self.allIds[newIndex]
         msg = "No more features - Disable previous and first buttons"
-        self.update(newFid, msg)
+        self.update(newFid, newIndex, msg)
 
     def last(self):
-        newFid = self.layer.featureCount() -1
+        self.guardarDatos(self.currentFid)
+        newIndex = len(self.allIds) - 1
+        newFid = self.allIds[newIndex]
         msg = "Error. Should never happen"
-        self.update(newFid, msg)
+        self.update(newFid, newIndex, msg)
 
     def first(self):
-        newFid = 0
+        self.guardarDatos(self.currentFid)
+        newIndex = 0
+        newFid = self.allIds[newIndex]
         msg = "Error. Error"
-        self.update(newFid, msg)
-        
+        self.update(newFid, newIndex, msg)        
     
-    def update(self, newFid, msg):
+    def update(self, newFid, newIndex, msg):
         feat = self.getFeature(newFid)
         if not feat:
             print msg
             return
+        self.currentIndexFid = newIndex
         self.currentFid = newFid
         self.updateNFeatLB()
         self.updateCanvas(feat)
         self.printIt(feat)
+        self.checkButtons()
         
     def updateCanvas(self, feat):
         if self.has_to_select():
@@ -189,24 +218,97 @@ class Navtable:
         return self.dlg.ui.selectCB.isChecked()
 
     def updateNFeatLB(self):
-        self.dlg.ui.currentFeatLB.setText(str(self.currentFid + 1))
+        self.dlg.ui.currentFeatLB.setText(str(self.currentIndexFid + 1))
 
     def getFeature(self, fid):
         feat = QgsFeature()
         if self.layer.getFeatures( QgsFeatureRequest().setFilterFid( fid ) ).nextFeature( feat ):
             return feat
         else:
-            return False
+            #return False
+            return feat
+
 
     def printIt(self, feat):
-        self.table.setText("")
+        #self.table.setText("")
         attrs = feat.attributes()
 
+        #Insertamos el FID de la geometria
+        # self.table.insertPlainText("FID - " + str(feat.id()))
+        # self.table.insertPlainText("\n")
+
+        self.table.setRowCount(len(attrs) + 2)
+        
+        numFilas = 0
         for n, v in enumerate(attrs):
-            self.table.insertPlainText("%s - %s"%(self.layer.attributeDisplayName(n), v))
-            self.table.insertPlainText("\n")
-        #TODO: only show length for lines and area for polygons
-        geom = feat.geometry()    
-        self.table.insertPlainText("%s - %f"%("length", geom.length()))
-        self.table.insertPlainText("\n")
-        self.table.insertPlainText("%s - %f"%("area", geom.area())) 
+            campo = QTableWidgetItem()
+            valor = QTableWidgetItem()
+            campo.setText(self.layer.attributeDisplayName(n))
+            valor.setText(unicode(v))
+
+            campo.setFlags( Qt.ItemIsSelectable |  Qt.ItemIsEnabled )
+
+            self.table.setItem(numFilas, 0, campo)
+            self.table.setItem(numFilas, 1, valor)
+
+            numFilas = numFilas + 1
+
+                
+        geom = feat.geometry() 
+        #Insertamos la longitud
+        campo = QTableWidgetItem()
+        valor = QTableWidgetItem()
+        campo.setText("length")
+        valor.setText(str(geom.length()))
+
+        campo.setFlags( Qt.ItemIsSelectable |  Qt.ItemIsEnabled )
+
+        self.table.setItem(numFilas, 0, campo)
+        self.table.setItem(numFilas, 1, valor)
+        #Comprobamos si es de tipo polygon
+        if geom.type() == 2:
+            campo = QTableWidgetItem()
+            valor = QTableWidgetItem()
+            campo.setText("area")
+            valor.setText(str(geom.area()))   
+
+            campo.setFlags( Qt.ItemIsSelectable |  Qt.ItemIsEnabled )
+
+            self.table.setItem(numFilas + 1, 0, campo)
+            self.table.setItem(numFilas + 1, 1, valor)
+
+
+
+    def checkButtons(self):
+
+        if self.currentIndexFid == len(self.allIds) - 1:
+            self.dlg.ui.nextBT.setEnabled(False)
+            self.dlg.ui.lastBT.setEnabled(False)
+        else:
+            self.dlg.ui.nextBT.setEnabled(True)
+            self.dlg.ui.lastBT.setEnabled(True)
+
+        if self.currentIndexFid == 0:
+            self.dlg.ui.previousBT.setEnabled(False)
+            self.dlg.ui.firstBT.setEnabled(False)
+        else:
+            self.dlg.ui.previousBT.setEnabled(True)
+            self.dlg.ui.firstBT.setEnabled(True)
+
+    '''
+    This method generates a dict ready to update the feature attributes
+    '''
+    def guardarDatos(self, fid):
+
+        if self.layer.isEditable():
+            caps = self.layer.dataProvider().capabilities()
+
+            newAttrs = {}
+            for r in range(self.table.rowCount() - 2):
+                for c in range(self.table.columnCount()):
+                    newAttrs[r] = self.table.item(r, c).data(0)
+            #print newAttrs
+
+            if caps & QgsVectorDataProvider.ChangeAttributeValues:
+                self.layer.dataProvider().changeAttributeValues({ fid : newAttrs })
+
