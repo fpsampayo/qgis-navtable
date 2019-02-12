@@ -20,17 +20,12 @@
  *                                                                         *
  ***************************************************************************/
 """
-# Import the PyQt and QGIS libraries
-#from PyQt5.QtCore import *
 from qgis.PyQt.QtGui import *
 from qgis.PyQt.QtWidgets import *
 from qgis.PyQt.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt
-#from PyQt5.QtGui import *
 from qgis.core import *
-# Initialize Qt resources from file resources.py
-#from .resources_rc import *
-# Import the code for the dialog
-from .navtabledialog import NavtableDialog
+from qgis.gui import QgsAttributeDialog
+from .gui.basePanel import BasePanel
 import os.path
 import math
 
@@ -54,20 +49,17 @@ class Navtable:
                 QCoreApplication.installTranslator(self.translator)
 
         # Create the dialog (after translation) and keep reference
-        self.dlg = NavtableDialog()
-        # self.dlg.ui.panCB.clicked.connect(self.panClicked)
-        # self.dlg.ui.zoomCB.clicked.connect(self.zoomClicked)
-        # self.dlg.ui.selectCB.clicked.connect(self.foo)
-        # self.dlg.ui.onlySelectedCB.clicked.connect(self.foo)
-        self.dlg.ui.nextBT.clicked.connect(self.next)
-        self.dlg.ui.previousBT.clicked.connect(self.previous)
-        self.dlg.ui.lastBT.clicked.connect(self.last)
-        self.dlg.ui.firstBT.clicked.connect(self.first)
+        self.dlg = BasePanel()
+        self.dlg.nextBT.clicked.connect(self.next)
+        self.dlg.previousBT.clicked.connect(self.previous)
+        self.dlg.lastBT.clicked.connect(self.last)
+        self.dlg.firstBT.clicked.connect(self.first)
         
     def initGui(self):
         # Create action that will start plugin configuration
+        icon_path = os.path.join(self.plugin_dir, 'icon', 'icon.png')
         self.action = QAction(
-            QIcon(":/plugins/navtable/icon.png"),
+            QIcon(icon_path),
             u"Navtable", self.iface.mainWindow())
         # connect the action to the run method
         self.action.triggered.connect(self.run)
@@ -82,7 +74,7 @@ class Navtable:
         self.iface.removeToolBarIcon(self.action)
 
     def run(self):
-        self.table = self.dlg.ui.attrsTable
+        self.table = self.dlg.attrsTable
         self.layer = self.iface.activeLayer()
 
         
@@ -99,14 +91,22 @@ class Navtable:
             # Lógica para poder ordenar los registros según un atributo
 
             self.allIds = self.layer.allFeatureIds()
-            print(self.allIds)
+            #print(self.allIds)
             self.currentIndexFid = 0
             self.currentFid = self.allIds[self.currentIndexFid]
             feat = self.getFeature(self.currentFid)
             if not feat:
                 print("Empty layer")
 
-            self.dlg.ui.nFeatLB.setText(str(self.layer.featureCount()))
+            # dialog = QgsAttributeDialog(self.layer, feat, False, showDialogButtons = False)
+            # dialog.setWindowFlag(Qt.Widget)
+            # #print(dialog)
+            # #dialog.show()
+            # #self.dlg.layout().itemAt(1).addItem(dialog)
+            # self.dlg.verticalLayout.replaceWidget(self.dlg.widget_form, dialog)
+            # print(self.dlg.widget_form.layout())
+
+            self.dlg.nFeatLB.setText(str(self.layer.featureCount()))
             self.dlg.setWindowTitle('NavTable - Capa: ' + self.layer.name())
             self.updateNFeatLB()
             self.printIt(feat)
@@ -213,16 +213,16 @@ class Navtable:
         self.iface.mapCanvas().refresh()
             
     def has_to_pan(self):
-        return self.dlg.ui.panCB.isChecked()
+        return self.dlg.panCB.isChecked()
 
     def has_to_zoom(self):
-        return self.dlg.ui.zoomCB.isChecked()
+        return self.dlg.zoomCB.isChecked()
     
     def has_to_select(self):
-        return self.dlg.ui.selectCB.isChecked()
+        return self.dlg.selectCB.isChecked()
 
     def updateNFeatLB(self):
-        self.dlg.ui.currentFeatLB.setText(str(self.currentIndexFid + 1))
+        self.dlg.currentFeatLB.setText(str(self.currentIndexFid + 1))
 
     def getFeature(self, fid):
         feat = QgsFeature()
@@ -286,18 +286,18 @@ class Navtable:
     def checkButtons(self):
 
         if self.currentIndexFid == len(self.allIds) - 1:
-            self.dlg.ui.nextBT.setEnabled(False)
-            self.dlg.ui.lastBT.setEnabled(False)
+            self.dlg.nextBT.setEnabled(False)
+            self.dlg.lastBT.setEnabled(False)
         else:
-            self.dlg.ui.nextBT.setEnabled(True)
-            self.dlg.ui.lastBT.setEnabled(True)
+            self.dlg.nextBT.setEnabled(True)
+            self.dlg.lastBT.setEnabled(True)
 
         if self.currentIndexFid == 0:
-            self.dlg.ui.previousBT.setEnabled(False)
-            self.dlg.ui.firstBT.setEnabled(False)
+            self.dlg.previousBT.setEnabled(False)
+            self.dlg.firstBT.setEnabled(False)
         else:
-            self.dlg.ui.previousBT.setEnabled(True)
-            self.dlg.ui.firstBT.setEnabled(True)
+            self.dlg.previousBT.setEnabled(True)
+            self.dlg.firstBT.setEnabled(True)
 
     '''
     This method generates a dict ready to update the feature attributes
