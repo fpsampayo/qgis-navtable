@@ -22,17 +22,19 @@
 """
 from qgis.PyQt.QtGui import *
 from qgis.PyQt.QtWidgets import *
-from qgis.PyQt.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt
+from qgis.PyQt.QtCore import QObject, QSettings, QTranslator, qVersion, QCoreApplication, Qt
 from qgis.core import *
+from qgis.core import QgsFeature, QgsVectorLayer
 from qgis.gui import QgsAttributeDialog
 from .gui.basePanel import BasePanel
 import os.path
 import math
 
 
-class Navtable:
+class Navtable(QObject):
 
     def __init__(self, iface):
+        super(Navtable, self).__init__()
         # Save reference to the QGIS interface
         self.iface = iface
         # initialize plugin directory
@@ -47,13 +49,6 @@ class Navtable:
 
             if qVersion() > '4.3.3':
                 QCoreApplication.installTranslator(self.translator)
-
-        # Create the dialog (after translation) and keep reference
-        self.dlg = BasePanel()
-        self.dlg.nextBT.clicked.connect(self.next)
-        self.dlg.previousBT.clicked.connect(self.previous)
-        self.dlg.lastBT.clicked.connect(self.last)
-        self.dlg.firstBT.clicked.connect(self.first)
         
     def initGui(self):
         # Create action that will start plugin configuration
@@ -74,10 +69,8 @@ class Navtable:
         self.iface.removeToolBarIcon(self.action)
 
     def run(self):
-        self.table = self.dlg.attrsTable
-        self.layer = self.iface.activeLayer()
 
-        
+        self.layer = self.iface.activeLayer()
 
         #Comprobamos si existe alguna capa y si esta es vectorial
         if self.layer == None or not isinstance(self.layer, QgsVectorLayer):
@@ -98,19 +91,27 @@ class Navtable:
             if not feat:
                 print("Empty layer")
 
-            # dialog = QgsAttributeDialog(self.layer, feat, False, showDialogButtons = False)
-            # dialog.setWindowFlag(Qt.Widget)
-            # #print(dialog)
-            # #dialog.show()
-            # #self.dlg.layout().itemAt(1).addItem(dialog)
-            # self.dlg.verticalLayout.replaceWidget(self.dlg.widget_form, dialog)
-            # print(self.dlg.widget_form.layout())
+            # Create the dialog (after translation) and keep reference
+            self.dlg = BasePanel()
+            self.dlg.nextBT.clicked.connect(self.next)
+            self.dlg.previousBT.clicked.connect(self.previous)
+            self.dlg.lastBT.clicked.connect(self.last)
+            self.dlg.firstBT.clicked.connect(self.first)
+
+            self.dlg.deleteBT.clicked.connect(self.deleteFeature)
+
+            self.layer.editingStarted.connect(self.activateEdit)
+            self.layer.editingStopped.connect(self.deactivateEdit)
+
+            self.previousDialog = self.dlg.widget_form
 
             self.dlg.nFeatLB.setText(str(self.layer.featureCount()))
-            self.dlg.setWindowTitle('NavTable - Capa: ' + self.layer.name())
+            self.dlg.setWindowTitle('NavTable - Layer: ' + self.layer.name())
             self.updateNFeatLB()
-            self.printIt(feat)
+            self.updateDialog(feat)
             self.checkButtons()
+            if self.layer.isEditable():
+                self.activateEdit()
             self.dlg.show()
 
             result = self.dlg.exec_()
@@ -129,43 +130,35 @@ class Navtable:
         print("zoom: " + str(self.has_to_zoom()))
 
     def next(self):
-        self.guardarDatos(self.currentFid)
         newIndex = self.currentIndexFid + 1
         newFid = self.allIds[newIndex]
-        msg = "No more features - Disable next and last buttons"
-        self.update(newFid, newIndex, msg)
+        self.update(newFid, newIndex)
         
     def previous(self):
-        self.guardarDatos(self.currentFid)
         newIndex = self.currentIndexFid - 1
         newFid = self.allIds[newIndex]
-        msg = "No more features - Disable previous and first buttons"
-        self.update(newFid, newIndex, msg)
+        self.update(newFid, newIndex)
 
     def last(self):
-        self.guardarDatos(self.currentFid)
         newIndex = len(self.allIds) - 1
         newFid = self.allIds[newIndex]
-        msg = "Error. Should never happen"
-        self.update(newFid, newIndex, msg)
+        self.update(newFid, newIndex)
 
     def first(self):
-        self.guardarDatos(self.currentFid)
         newIndex = 0
         newFid = self.allIds[newIndex]
-        msg = "Error. Error"
-        self.update(newFid, newIndex, msg)        
+        self.update(newFid, newIndex)
     
-    def update(self, newFid, newIndex, msg):
+    def update(self, newFid, newIndex):
         feat = self.getFeature(newFid)
         if not feat:
-            print(msg)
+            print("Error accesing index.")
             return
         self.currentIndexFid = newIndex
         self.currentFid = newFid
         self.updateNFeatLB()
         self.updateCanvas(feat)
-        self.printIt(feat)
+        self.updateDialog(feat)
         self.checkButtons()
         
     def updateCanvas(self, feat):
@@ -223,6 +216,7 @@ class Navtable:
 
     def updateNFeatLB(self):
         self.dlg.currentFeatLB.setText(str(self.currentIndexFid + 1))
+        self.dlg.nFeatLB.setText(str(self.layer.featureCount()))
 
     def getFeature(self, fid):
         feat = QgsFeature()
@@ -231,57 +225,6 @@ class Navtable:
         else:
             #return False
             return feat
-
-
-    def printIt(self, feat):
-        #self.table.setText("")
-        attrs = feat.attributes()
-
-        #Insertamos el FID de la geometria
-        # self.table.insertPlainText("FID - " + str(feat.id()))
-        # self.table.insertPlainText("\n")
-
-        self.table.setRowCount(len(attrs) + 2)
-        
-        numFilas = 0
-        for n, v in enumerate(attrs):
-            campo = QTableWidgetItem()
-            valor = QTableWidgetItem()
-            campo.setText(self.layer.attributeDisplayName(n))
-            valor.setText(unicode(v))
-
-            campo.setFlags( Qt.ItemIsSelectable |  Qt.ItemIsEnabled )
-
-            self.table.setItem(numFilas, 0, campo)
-            self.table.setItem(numFilas, 1, valor)
-
-            numFilas = numFilas + 1
-
-                
-        geom = feat.geometry() 
-        #Insertamos la longitud
-        campo = QTableWidgetItem()
-        valor = QTableWidgetItem()
-        campo.setText("length")
-        valor.setText(str(geom.length()))
-
-        campo.setFlags( Qt.ItemIsSelectable |  Qt.ItemIsEnabled )
-
-        self.table.setItem(numFilas, 0, campo)
-        self.table.setItem(numFilas, 1, valor)
-        #Comprobamos si es de tipo polygon
-        if geom.type() == 2:
-            campo = QTableWidgetItem()
-            valor = QTableWidgetItem()
-            campo.setText("area")
-            valor.setText(str(geom.area()))   
-
-            campo.setFlags( Qt.ItemIsSelectable |  Qt.ItemIsEnabled )
-
-            self.table.setItem(numFilas + 1, 0, campo)
-            self.table.setItem(numFilas + 1, 1, valor)
-
-
 
     def checkButtons(self):
 
@@ -299,20 +242,32 @@ class Navtable:
             self.dlg.previousBT.setEnabled(True)
             self.dlg.firstBT.setEnabled(True)
 
-    '''
-    This method generates a dict ready to update the feature attributes
-    '''
-    def guardarDatos(self, fid):
+    def updateDialog(self, feat):
 
-        if self.layer.isEditable():
-            caps = self.layer.dataProvider().capabilities()
+        if isinstance(self.previousDialog, QgsAttributeDialog):
+            self.previousDialog.accept()
+        self.currentDialog = QgsAttributeDialog(self.layer, feat, False, showDialogButtons=False)
+        self.currentDialog.setWindowFlag(Qt.Widget)
 
-            newAttrs = {}
-            for r in range(self.table.rowCount() - 2):
-                for c in range(self.table.columnCount()):
-                    newAttrs[r] = self.table.item(r, c).data(0)
-            #print(newAttrs)
+        self.dlg.verticalLayout.replaceWidget(self.previousDialog, self.currentDialog)
+        self.previousDialog = self.currentDialog
 
-            if caps & QgsVectorDataProvider.ChangeAttributeValues:
-                self.layer.dataProvider().changeAttributeValues({ fid : newAttrs })
+    def deleteFeature(self):
 
+        self.layer.deleteFeature(self.currentFid)
+        self.allIds.remove(self.currentFid)
+
+        if self.currentIndexFid >= len(self.allIds) - 1:
+            self.currentIndexFid = self.currentIndexFid - 1
+        newFid = self.allIds[self.currentIndexFid]
+        self.update(newFid, self.currentIndexFid)
+
+    def activateEdit(self):
+
+        self.dlg.deleteBT.setEnabled(True)
+        self.dlg.deleteBT.setStyleSheet("background-color: red")
+
+    def deactivateEdit(self):
+
+        self.dlg.deleteBT.setEnabled(False)
+        self.dlg.deleteBT.setStyleSheet("")
