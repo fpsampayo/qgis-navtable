@@ -21,15 +21,19 @@
  ***************************************************************************/
 """
 # Import the PyQt and QGIS libraries
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+#from PyQt5.QtCore import *
+from qgis.PyQt.QtGui import *
+from qgis.PyQt.QtWidgets import *
+from qgis.PyQt.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt
+#from PyQt5.QtGui import *
 from qgis.core import *
 # Initialize Qt resources from file resources.py
-import resources_rc
+#from .resources_rc import *
 # Import the code for the dialog
-from navtabledialog import NavtableDialog
+from .navtabledialog import NavtableDialog
 import os.path
 import math
+
 
 class Navtable:
 
@@ -95,12 +99,12 @@ class Navtable:
             # Lógica para poder ordenar los registros según un atributo
 
             self.allIds = self.layer.allFeatureIds()
-            print self.allIds
+            print(self.allIds)
             self.currentIndexFid = 0
             self.currentFid = self.allIds[self.currentIndexFid]
             feat = self.getFeature(self.currentFid)
             if not feat:
-                print "Empty layer"
+                print("Empty layer")
 
             self.dlg.ui.nFeatLB.setText(str(self.layer.featureCount()))
             self.dlg.setWindowTitle('NavTable - Capa: ' + self.layer.name())
@@ -117,12 +121,12 @@ class Navtable:
 
 
     def panClicked(self):
-        print "pan: " + str(self.has_to_pan())
-        print "zoom: " + str(self.has_to_zoom())
+        print("pan: " + str(self.has_to_pan()))
+        print("zoom: " + str(self.has_to_zoom()))
         
     def zoomClicked(self):
-        print "pan: " + str(self.has_to_pan())
-        print "zoom: " + str(self.has_to_zoom())
+        print("pan: " + str(self.has_to_pan()))
+        print("zoom: " + str(self.has_to_zoom()))
 
     def next(self):
         self.guardarDatos(self.currentFid)
@@ -155,7 +159,7 @@ class Navtable:
     def update(self, newFid, newIndex, msg):
         feat = self.getFeature(newFid)
         if not feat:
-            print msg
+            print(msg)
             return
         self.currentIndexFid = newIndex
         self.currentFid = newFid
@@ -166,7 +170,7 @@ class Navtable:
         
     def updateCanvas(self, feat):
         if self.has_to_select():
-            self.layer.setSelectedFeatures([self.currentFid])
+            self.layer.selectByIds([self.currentFid])
         
         geom = feat.geometry()
         if self.has_to_zoom():
@@ -307,7 +311,7 @@ class Navtable:
             for r in range(self.table.rowCount() - 2):
                 for c in range(self.table.columnCount()):
                     newAttrs[r] = self.table.item(r, c).data(0)
-            #print newAttrs
+            #print(newAttrs)
 
             if caps & QgsVectorDataProvider.ChangeAttributeValues:
                 self.layer.dataProvider().changeAttributeValues({ fid : newAttrs })

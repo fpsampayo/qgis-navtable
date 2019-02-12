@@ -20,14 +20,14 @@
  ***************************************************************************/
 """
 
-from PyQt4 import QtCore, QtGui
-from ui_navtable import Ui_Navtable
+from qgis.PyQt.QtWidgets import QDialog
+from .ui_navtable import Ui_Navtable
 # create the dialog for zoom to point
 
 
-class NavtableDialog(QtGui.QDialog):
+class NavtableDialog(QDialog):
     def __init__(self):
-        QtGui.QDialog.__init__(self)
+        QDialog.__init__(self)
         # Set up the user interface from Designer.
         self.ui = Ui_Navtable()
         self.ui.setupUi(self)
