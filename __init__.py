@@ -23,5 +23,5 @@
 
 def classFactory(iface):
     # load Navtable class from file Navtable
-    from navtable import Navtable
+    from .navtable import Navtable
     return Navtable(iface)
