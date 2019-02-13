@@ -21,6 +21,7 @@ class NTExpressionBuilder(BASE, WIDGET):
         self.expressionBuilder = self.mExpressionBuilderWidget
         self.expressionBuilder.setLayer(layer)
         self.expressionBuilder.loadFieldNames()
+        self.expressionBuilder.loadRecent()
 
         self.initialExpression = expression
         self.expressionBuilder.setExpressionText(expression)
@@ -33,4 +34,5 @@ class NTExpressionBuilder(BASE, WIDGET):
 
         if self.expressionBuilder.isExpressionValid() or \
             self.expressionBuilder.expressionText() == '':
+            self.expressionBuilder.saveToRecent()
             super(NTExpressionBuilder, self).accept()
