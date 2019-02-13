@@ -25,7 +25,7 @@ homepage=https://github.com/fpsampayo/qgis-navtable
 tracker=https://github.com/fpsampayo/qgis-navtable/issues
 repository=https://github.com/fpsampayo/qgis-navtable
 category=Plugins
-icon=icon.png
+icon=icon/icon.png
 
 # experimental flag
 experimental=False
