@@ -252,7 +252,7 @@ class Navtable(QObject):
         self.currentDialog = QgsAttributeDialog(self.layer, feat, False, showDialogButtons=False)
         self.currentDialog.setWindowFlag(Qt.Widget)
 
-        self.dlg.verticalLayout.replaceWidget(self.previousDialog, self.currentDialog)
+        self.dlg.scrollArea.setWidget(self.currentDialog)
         self.previousDialog = self.currentDialog
 
     def deleteFeature(self):
