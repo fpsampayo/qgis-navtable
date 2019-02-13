@@ -74,7 +74,7 @@ class Navtable(QObject):
 
         #Comprobamos si existe alguna capa y si esta es vectorial
         if self.layer == None or not isinstance(self.layer, QgsVectorLayer):
-            QMessageBox.information(None, "Aviso", u"NavTable necesita una capa vectorial para funcionar.")
+            self.iface.messageBar().pushMessage("Invalid Layer", "NavTable only works on a vector layer", level=Qgis.Warning)
         else:
             # Lógica para poder ordenar los registros según un atributo
             # featureRequest = QgsFeatureRequest()
