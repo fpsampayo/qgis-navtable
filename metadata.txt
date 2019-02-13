@@ -1,38 +1,34 @@
-# This file contains metadata for your plugin. Beginning
-# with version 1.8 this is the preferred way to supply information about a
-# plugin. The current method of embedding metadata in __init__.py will
-# be supported until version 2.0
-
-# This file should be included when you package your plugin.
-
-# Mandatory items:
-
 
 [general]
 name=Navtable
 qgisMinimumVersion=3.0
-description=Navtable
+description=NavTable is a QGIS plugin to view in a agile way the records of vectorial geographical information layers.
 version=0.1
-author=fpuga
-email=fpuga@cartolab.es
+author=Francisco Puga, Francisco P. Sampayo
+email=fpsampayo@gmail.com
+about=
+    Its main characteristic is that allows to see the element's attributes one by one and in vertical direction.
+    Some of its features are: edit alphanumeric values and navigate among the elements of an information layer.
 
 # end of mandatory metadata
 
 # Optional items:
 
 # Uncomment the following line and add your changelog entries:
-# changelog=
+changelog=
+    13.02.2019 v0.1: First version
 
 # tags are comma separated with spaces allowed
-tags=
+tags=vector, table, forms, filter
 
-homepage=
-tracker=
-repository=
+homepage=https://github.com/fpsampayo/qgis-navtable
+tracker=https://github.com/fpsampayo/qgis-navtable/issues
+repository=https://github.com/fpsampayo/qgis-navtable
+category=Plugins
 icon=icon.png
+
 # experimental flag
 experimental=False
 
 # deprecated flag (applies to the whole plugin, not just a single version
 deprecated=False
-
