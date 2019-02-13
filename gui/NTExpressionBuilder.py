@@ -17,12 +17,19 @@ class NTExpressionBuilder(BASE, WIDGET):
         self.setupUi(self)
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
+        self.setWindowTitle('Filter NavTable Features by Expression')
         self.expressionBuilder = self.mExpressionBuilderWidget
         self.expressionBuilder.setLayer(layer)
         self.expressionBuilder.loadFieldNames()
+
+        self.initialExpression = expression
         self.expressionBuilder.setExpressionText(expression)
 
     def accept(self):
+
+        if self.initialExpression == self.expressionBuilder.expressionText():
+            self.reject()
+            return
 
         if self.expressionBuilder.isExpressionValid() or \
             self.expressionBuilder.expressionText() == '':
