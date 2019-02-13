@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>505</width>
-    <height>593</height>
+    <width>424</width>
+    <height>222</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -27,17 +27,19 @@
      </property>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QCheckBox" name="panCB">
-         <property name="text">
-          <string>Pan</string>
-         </property>
-        </widget>
-       </item>
-       <item>
+       <property name="spacing">
+        <number>6</number>
+       </property>
+       <property name="topMargin">
+        <number>10</number>
+       </property>
+       <item alignment="Qt::AlignHCenter">
         <widget class="QCheckBox" name="selectCB">
          <property name="enabled">
           <bool>true</bool>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::LeftToRight</enum>
          </property>
          <property name="text">
           <string>Select</string>
@@ -47,17 +49,14 @@
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QCheckBox" name="onlySelectedCB">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
+       <item alignment="Qt::AlignHCenter">
+        <widget class="QCheckBox" name="panCB">
          <property name="text">
-          <string>Only Selected</string>
+          <string>Pan</string>
          </property>
         </widget>
        </item>
-       <item>
+       <item alignment="Qt::AlignHCenter">
         <widget class="QCheckBox" name="zoomCB">
          <property name="text">
           <string>Zoom</string>
@@ -67,41 +66,19 @@
       </layout>
      </item>
      <item>
-      <widget class="QTableWidget" name="attrsTable">
-       <property name="alternatingRowColors">
-        <bool>true</bool>
+      <widget class="QWidget" name="widget_form" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
-       <property name="selectionMode">
-        <enum>QAbstractItemView::SingleSelection</enum>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
        </property>
-       <property name="sortingEnabled">
-        <bool>false</bool>
-       </property>
-       <attribute name="horizontalHeaderVisible">
-        <bool>true</bool>
-       </attribute>
-       <attribute name="horizontalHeaderCascadingSectionResizes">
-        <bool>false</bool>
-       </attribute>
-       <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
-        <bool>true</bool>
-       </attribute>
-       <attribute name="horizontalHeaderStretchLastSection">
-        <bool>true</bool>
-       </attribute>
-       <attribute name="verticalHeaderStretchLastSection">
-        <bool>false</bool>
-       </attribute>
-       <column>
-        <property name="text">
-         <string>campo</string>
-        </property>
-       </column>
-       <column>
-        <property name="text">
-         <string>valor</string>
-        </property>
-       </column>
       </widget>
      </item>
      <item>
@@ -176,32 +153,12 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QPushButton" name="pushButton_3">
+        <widget class="QPushButton" name="deleteBT">
          <property name="enabled">
           <bool>false</bool>
          </property>
          <property name="text">
           <string>Delete</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_2">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>Copy Previous</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_4">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>Save</string>
          </property>
         </widget>
        </item>

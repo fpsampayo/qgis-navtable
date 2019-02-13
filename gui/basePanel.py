@@ -3,6 +3,7 @@
 
 import os
 from qgis.PyQt import uic
+from qgis.PyQt.QtCore import Qt
 
 pluginPath = os.path.split(os.path.dirname(__file__))[0]
 WIDGET, BASE = uic.loadUiType(
@@ -14,3 +15,4 @@ class BasePanel(BASE, WIDGET):
     def __init__(self):
         super(BasePanel, self).__init__(None)
         self.setupUi(self)
+        self.setWindowFlag(Qt.WindowStaysOnTopHint)
