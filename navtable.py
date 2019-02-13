@@ -27,6 +27,7 @@ from qgis.core import *
 from qgis.core import QgsFeature, QgsVectorLayer
 from qgis.gui import QgsAttributeDialog
 from .gui.basePanel import BasePanel
+from .gui.NTExpressionBuilder import NTExpressionBuilder
 import os.path
 import math
 
@@ -74,7 +75,7 @@ class Navtable(QObject):
 
         #Comprobamos si existe alguna capa y si esta es vectorial
         if self.layer == None or not isinstance(self.layer, QgsVectorLayer):
-            QMessageBox.information(None, "Aviso", u"NavTable necesita una capa vectorial para funcionar.")
+            self.iface.messageBar().pushMessage("Invalid Layer", "NavTable only works on a vector layer", level=Qgis.Warning)
         else:
             # Lógica para poder ordenar los registros según un atributo
             # featureRequest = QgsFeatureRequest()
@@ -87,6 +88,7 @@ class Navtable(QObject):
             #print(self.allIds)
             self.currentIndexFid = 0
             self.currentFid = self.allIds[self.currentIndexFid]
+            self.currentExpression = ''
             feat = self.getFeature(self.currentFid)
             if not feat:
                 print("Empty layer")
@@ -97,6 +99,7 @@ class Navtable(QObject):
             self.dlg.previousBT.clicked.connect(self.previous)
             self.dlg.lastBT.clicked.connect(self.last)
             self.dlg.firstBT.clicked.connect(self.first)
+            self.dlg.filterBT.clicked.connect(self.filter)
 
             self.dlg.deleteBT.clicked.connect(self.deleteFeature)
 
@@ -106,7 +109,7 @@ class Navtable(QObject):
             self.previousDialog = self.dlg.widget_form
 
             self.dlg.nFeatLB.setText(str(self.layer.featureCount()))
-            self.dlg.setWindowTitle('NavTable - Layer: ' + self.layer.name())
+            self.dlg.setWindowTitle('NavTable - ' + self.layer.name())
             self.updateNFeatLB()
             self.updateDialog(feat)
             self.checkButtons()
@@ -216,7 +219,7 @@ class Navtable(QObject):
 
     def updateNFeatLB(self):
         self.dlg.currentFeatLB.setText(str(self.currentIndexFid + 1))
-        self.dlg.nFeatLB.setText(str(self.layer.featureCount()))
+        self.dlg.nFeatLB.setText(str(len(self.allIds)))
 
     def getFeature(self, fid):
         feat = QgsFeature()
@@ -271,3 +274,24 @@ class Navtable(QObject):
 
         self.dlg.deleteBT.setEnabled(False)
         self.dlg.deleteBT.setStyleSheet("")
+
+    def filter(self):
+
+        filter = NTExpressionBuilder(self.layer, self.currentExpression)
+
+        if filter.exec_():
+            self.currentExpression = filter.expressionBuilder.expressionText()
+
+            if self.currentExpression != '':
+                expr = QgsExpression(self.currentExpression)
+                selection = self.layer.getFeatures(QgsFeatureRequest(expr))
+                self.allIds = [s.id() for s in selection]
+                self.dlg.setWindowTitle('NavTable - {} ({})'.format(self.layer.name(), 'Filtered'))
+
+            if len(self.allIds) == 0 or self.currentExpression == '':
+                self.allIds = self.layer.allFeatureIds()
+                self.dlg.setWindowTitle('NavTable - ' + self.layer.name())
+
+            self.currentIndexFid = 0
+            newFid = self.allIds[self.currentIndexFid]
+            self.update(newFid, self.currentIndexFid)
