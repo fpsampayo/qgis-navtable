@@ -63,10 +63,26 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QPushButton" name="filterBT">
+         <property name="maximumSize">
+          <size>
+           <width>23</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
      <item>
       <widget class="QWidget" name="widget_form" native="true">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>
