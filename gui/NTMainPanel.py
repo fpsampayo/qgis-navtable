@@ -10,6 +10,7 @@ from qgis.gui import QgsAttributeDialog
 
 from .NTSelectByFormDialog import NTSelectByFormDialog
 from .NTExpressionBuilder import NTExpressionBuilder
+from .NTFieldSelect import NTFieldSelect
 
 pluginPath = os.path.split(os.path.dirname(__file__))[0]
 WIDGET, BASE = uic.loadUiType(
@@ -27,9 +28,10 @@ class NTMainPanel(BASE, WIDGET):
         self.layer = vlayer
 
         self.setWindowTitle('NavTable - ' + self.layer.name())
-        self.exprFilterBT.setIcon(QgsApplication.getThemeIcon('/mIconExpressionSelect.svg'))
-        self.formFilterBT.setIcon(QgsApplication.getThemeIcon('/mIconFormSelect.svg'))
+        self.exprFilterBT.setIcon(QgsApplication.getThemeIcon('mIconExpressionSelect.svg'))
+        self.formFilterBT.setIcon(QgsApplication.getThemeIcon('mIconFormSelect.svg'))
         self.removeFilterBT.setIcon(QgsApplication.getThemeIcon('mActionDeselectAll.svg'))
+        self.orderByBT.setIcon(QgsApplication.getThemeIcon('sort.svg'))
 
         self.previousDialog = self.widget_form
 
@@ -40,6 +42,7 @@ class NTMainPanel(BASE, WIDGET):
         self.previousBT.clicked.connect(self.previous)
         self.lastBT.clicked.connect(self.last)
         self.firstBT.clicked.connect(self.first)
+        self.orderByBT.clicked.connect(self.orderBy)
         self.exprFilterBT.clicked.connect(self.filter_by_expression)
         self.formFilterBT.clicked.connect(self.filter_by_form)
         self.removeFilterBT.clicked.connect(self.removeFilter)
@@ -258,9 +261,18 @@ class NTMainPanel(BASE, WIDGET):
         newFid = self.allIds[self.currentIndexFid]
         self.update(newFid, self.currentIndexFid)
 
-    # Lógica para poder ordenar los registros según un atributo
-    # featureRequest = QgsFeatureRequest()
-    # featureRequest.addOrderBy("parroquia", True)
-    # feats = self.layer.getFeatures(featureRequest)
-    # self.allIds = [f.id() for f in feats]
-    # Lógica para poder ordenar los registros según un atributo
+    def orderBy(self):
+
+        dialog = NTFieldSelect(self.layer)
+
+        if dialog.exec_():
+
+            featureRequest = dialog.generateFeatureRequest()
+            featureRequest.setFilterFids(self.allIds)
+
+            feats = self.layer.getFeatures(featureRequest)
+            self.allIds = [f.id() for f in feats]
+
+            self.currentIndexFid = 0
+            newFid = self.allIds[self.currentIndexFid]
+            self.update(newFid, self.currentIndexFid)
