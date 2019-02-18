@@ -45,19 +45,19 @@ HELP = help/build/html
 	lrelease $<
 
 deploy_temp: transclean transcompile
-	rm -rf ./temp
-	mkdir -p ./temp/$(PLUGINNAME)
-	mkdir -p ./temp/$(PLUGINNAME)/$(PY_MODULES)
-	cp -vrf $(PY_MODULES)/*.py ./temp/$(PLUGINNAME)/$(PY_MODULES)/
-	cp -vf $(PY_FILES) ./temp/$(PLUGINNAME)/
-	cp -vrf $(FOLDERS) ./temp/$(PLUGINNAME)/
-	cp -vf metadata.txt ./temp/$(PLUGINNAME)/
-	mkdir -p ./temp/$(PLUGINNAME)/i18n
-	cp -vf i18n/*.qm ./temp/$(PLUGINNAME)/i18n/
+	rm -rf ./dist
+	mkdir -p ./dist/$(PLUGINNAME)
+	mkdir -p ./dist/$(PLUGINNAME)/$(PY_MODULES)
+	cp -vrf $(PY_MODULES)/*.py ./dist/$(PLUGINNAME)/$(PY_MODULES)/
+	cp -vf $(PY_FILES) ./dist/$(PLUGINNAME)/
+	cp -vrf $(FOLDERS) ./dist/$(PLUGINNAME)/
+	cp -vf metadata.txt ./dist/$(PLUGINNAME)/
+	mkdir -p ./dist/$(PLUGINNAME)/i18n
+	cp -vf i18n/*.qm ./dist/$(PLUGINNAME)/i18n/
 
 zip: deploy_temp
 	rm -f $(PLUGINNAME).zip
-	cd ./temp; zip -9r $(CURDIR)/$(PLUGINNAME).zip $(PLUGINNAME)
+	cd ./dist; zip -9r $(CURDIR)/dist/$(PLUGINNAME).zip $(PLUGINNAME)
 
 # Create a zip package of the plugin named $(PLUGINNAME).zip. 
 # This requires use of git (your plugin development directory must be a 
