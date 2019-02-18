@@ -10,3 +10,5 @@ Features:
 * Edit and delete records when layer is in editing mode
 * Access to layers actions
 * Filter by expression using Qgis Expression Builder
+* Filter by form using QgsAttributeForm in search mode
+* Sort features
