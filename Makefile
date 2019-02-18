@@ -17,72 +17,47 @@
 # *                                                                         *
 # ***************************************************************************/
 
-# CONFIGURATION
-PLUGIN_UPLOAD = $(CURDIR)/plugin_upload.py
-
-QGISDIR=.qgis2
-
 # Makefile for a PyQGIS plugin 
 
 # translation
-SOURCES = navtable.py ui_navtable.py __init__.py navtabledialog.py
-#TRANSLATIONS = i18n/navtable_en.ts
-TRANSLATIONS = 
+FORMS = ../ui/main_panel.ui ../ui/field_select.ui ../ui/expressionBuilderDialog.ui
+SOURCES = ../navtable.py ../gui/NTExpressionBuilder.py ../gui/NTFieldSelect.py ../gui/NTMainPanel.py ../gui/NTSelectByFormDialog.py
+TRANSLATIONS = i18n/navtable_en.ts i18n/navtable_es.ts
 
 # global
 
-PLUGINNAME = navtable
+PLUGINNAME = NavTable
 
-PY_FILES = navtable.py navtabledialog.py __init__.py
+PY_FILES = __init__.py navtable.py
 
-EXTRAS = icon.png metadata.txt
+PY_MODULES = gui
 
-UI_FILES = ui_navtable.py
+EXTRAS = metadata.txt icon/icon.png
 
-RESOURCE_FILES = resources_rc.py
+FOLDERS = icon ui
+
+UI_FILES = ui/main_panel.ui ui/field_select.ui ui/expressionBuilderDialog.ui
 
 HELP = help/build/html
 
-default: compile
-
-compile: $(UI_FILES) $(RESOURCE_FILES)
-
-%_rc.py : %.qrc
-	pyrcc4 -o $*_rc.py  $<
-
-%.py : %.ui
-	pyuic4 -o $@ $<
 
 %.qm : %.ts
 	lrelease $<
 
-# The deploy  target only works on unix like operating system where
-# the Python plugin directory is located at:
-# $HOME/$(QGISDIR)/python/plugins
-deploy: compile doc transcompile
-	mkdir -p $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
-	cp -vf $(PY_FILES) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
-	cp -vf $(UI_FILES) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
-	cp -vf $(RESOURCE_FILES) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
-	cp -vf $(EXTRAS) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
-	cp -vfr i18n $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
-	cp -vfr $(HELP) $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)/help
+deploy_temp: transclean transcompile
+	rm -rf ./temp
+	mkdir -p ./temp/$(PLUGINNAME)
+	mkdir -p ./temp/$(PLUGINNAME)/$(PY_MODULES)
+	cp -vrf $(PY_MODULES)/*.py ./temp/$(PLUGINNAME)/$(PY_MODULES)/
+	cp -vf $(PY_FILES) ./temp/$(PLUGINNAME)/
+	cp -vrf $(FOLDERS) ./temp/$(PLUGINNAME)/
+	cp -vf metadata.txt ./temp/$(PLUGINNAME)/
+	mkdir -p ./temp/$(PLUGINNAME)/i18n
+	cp -vf i18n/*.qm ./temp/$(PLUGINNAME)/i18n/
 
-# The dclean target removes compiled python files from plugin directory
-# also delets any .svn entry
-dclean:
-	find $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME) -iname "*.pyc" -delete
-	find $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME) -iname ".svn" -prune -exec rm -Rf {} \;
-
-# The derase deletes deployed plugin
-derase:
-	rm -Rf $(HOME)/$(QGISDIR)/python/plugins/$(PLUGINNAME)
-
-# The zip target deploys the plugin and creates a zip file with the deployed
-# content. You can then upload the zip file on http://plugins.qgis.org
-zip: deploy dclean 
+zip: deploy_temp
 	rm -f $(PLUGINNAME).zip
-	cd $(HOME)/$(QGISDIR)/python/plugins; zip -9r $(CURDIR)/$(PLUGINNAME).zip $(PLUGINNAME)
+	cd ./temp; zip -9r $(CURDIR)/$(PLUGINNAME).zip $(PLUGINNAME)
 
 # Create a zip package of the plugin named $(PLUGINNAME).zip. 
 # This requires use of git (your plugin development directory must be a 
@@ -93,9 +68,6 @@ package: compile
 		rm -f $(PLUGINNAME).zip
 		git archive --prefix=$(PLUGINNAME)/ -o $(PLUGINNAME).zip $(VERSION)
 		echo "Created package: $(PLUGINNAME).zip"
-
-upload: zip
-	$(PLUGIN_UPLOAD) $(PLUGINNAME).zip
 
 # transup
 # update .ts translation files
@@ -110,10 +82,3 @@ transcompile: $(TRANSLATIONS:.ts=.qm)
 # deletes all .qm files
 transclean:
 	rm -f i18n/*.qm
-
-clean:
-	rm $(UI_FILES) $(RESOURCE_FILES)
-
-# build documentation with sphinx
-doc: 
-	cd help; make html
