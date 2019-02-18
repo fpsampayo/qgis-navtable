@@ -75,6 +75,28 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
+          <widget class="QPushButton" name="orderByBT">
+           <property name="maximumSize">
+            <size>
+             <width>23</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="mouseTracking">
+            <bool>true</bool>
+           </property>
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
+           <property name="toolTip">
+            <string>Sort NavTable Features</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="removeFilterBT">
            <property name="maximumSize">
             <size>
@@ -89,7 +111,7 @@
             <enum>Qt::NoFocus</enum>
            </property>
            <property name="toolTip">
-            <string>Filter NavTable Features by Form</string>
+            <string>Remove Filter</string>
            </property>
            <property name="text">
             <string/>
