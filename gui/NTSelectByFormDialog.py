@@ -32,7 +32,7 @@ class NTSelectByFormDialog(QDialog):
 
         self.form.closed.connect(self.close)
 
-        self.setWindowTitle('Filter NavTable Features by Expression')
+        self.setWindowTitle(self.tr('Filter NavTable Features by Form'))
 
         self.expression = ''
 

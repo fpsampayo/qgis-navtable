@@ -17,7 +17,7 @@ class NTExpressionBuilder(BASE, WIDGET):
         self.setupUi(self)
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
-        self.setWindowTitle('Filter NavTable Features by Expression')
+        self.setWindowTitle(self.tr('Filter NavTable Features by Expression'))
         self.expressionBuilder = self.mExpressionBuilderWidget
         self.expressionBuilder.setLayer(layer)
         self.expressionBuilder.loadFieldNames()
