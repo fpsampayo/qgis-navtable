@@ -17,7 +17,7 @@ class NTFieldSelect(BASE, WIDGET):
         super(NTFieldSelect, self).__init__(None)
         self.setupUi(self)
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.setWindowTitle('Sort NavTable Features by field')
+        self.setWindowTitle(self.tr('Sort NavTable Features by field'))
 
         self.fieldSelectCB.setLayer(layer)
         self.fieldSelectCB2.setLayer(layer)

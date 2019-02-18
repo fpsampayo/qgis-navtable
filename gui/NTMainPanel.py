@@ -250,7 +250,7 @@ class NTMainPanel(BASE, WIDGET):
             expr = QgsExpression(self.currentExpression)
             selection = self.layer.getFeatures(QgsFeatureRequest(expr))
             self.allIds = [s.id() for s in selection]
-            self.setWindowTitle('NavTable - {} ({})'.format(self.layer.name(), 'Filtered'))
+            self.setWindowTitle('NavTable - {} ({})'.format(self.layer.name(), self.tr('Filtered')))
             self.removeFilterBT.setEnabled(True)
 
         if len(self.allIds) == 0 or self.currentExpression == '':

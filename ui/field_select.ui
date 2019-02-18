@@ -32,7 +32,7 @@
      <item>
       <widget class="QCheckBox" name="sortOrderCB">
        <property name="text">
-        <string>Ascending?</string>
+        <string>Ascending</string>
        </property>
        <property name="checked">
         <bool>true</bool>
@@ -56,7 +56,7 @@
      <item>
       <widget class="QCheckBox" name="sortOrderCB2">
        <property name="text">
-        <string>Ascending?</string>
+        <string>Ascending</string>
        </property>
        <property name="checked">
         <bool>true</bool>
@@ -80,7 +80,7 @@
      <item>
       <widget class="QCheckBox" name="sortOrderCB3">
        <property name="text">
-        <string>Ascending?</string>
+        <string>Ascending</string>
        </property>
        <property name="checked">
         <bool>true</bool>
