@@ -28,6 +28,7 @@ from qgis.core import QgsFeature, QgsVectorLayer
 from qgis.gui import QgsAttributeDialog
 from .gui.basePanel import BasePanel
 from .gui.NTExpressionBuilder import NTExpressionBuilder
+from .gui.NTSelectByFormDialog import NTSelectByFormDialog
 import os.path
 import math
 
@@ -77,13 +78,6 @@ class Navtable(QObject):
         if self.layer == None or not isinstance(self.layer, QgsVectorLayer):
             self.iface.messageBar().pushMessage("Invalid Layer", "NavTable only works on a vector layer", level=Qgis.Warning)
         else:
-            # Lógica para poder ordenar los registros según un atributo
-            # featureRequest = QgsFeatureRequest()
-            # featureRequest.addOrderBy("parroquia", True)
-            # feats = self.layer.getFeatures(featureRequest)
-            # self.allIds = [f.id() for f in feats]
-            # Lógica para poder ordenar los registros según un atributo
-
             self.allIds = self.layer.allFeatureIds()
             #print(self.allIds)
             self.currentIndexFid = 0
@@ -99,9 +93,11 @@ class Navtable(QObject):
             self.dlg.previousBT.clicked.connect(self.previous)
             self.dlg.lastBT.clicked.connect(self.last)
             self.dlg.firstBT.clicked.connect(self.first)
-            self.dlg.filterBT.clicked.connect(self.filter)
+            self.dlg.exprFilterBT.clicked.connect(self.filter_by_expression)
+            self.dlg.formFilterBT.clicked.connect(self.filter_by_form)
 
             self.dlg.deleteBT.clicked.connect(self.deleteFeature)
+            self.dlg.currentFeatLB.returnPressed.connect(self.manual)
 
             self.layer.editingStarted.connect(self.activateEdit)
             self.layer.editingStopped.connect(self.deactivateEdit)
@@ -116,7 +112,7 @@ class Navtable(QObject):
             if self.layer.isEditable():
                 self.activateEdit()
             self.dlg.show()
-
+            
             result = self.dlg.exec_()
             # See if OK was pressed
             if result == 1:
@@ -149,6 +145,11 @@ class Navtable(QObject):
 
     def first(self):
         newIndex = 0
+        newFid = self.allIds[newIndex]
+        self.update(newFid, newIndex)
+        
+    def manual(self):
+        newIndex = int(self.dlg.currentFeatLB.text()) - 1
         newFid = self.allIds[newIndex]
         self.update(newFid, newIndex)
     
@@ -218,8 +219,7 @@ class Navtable(QObject):
         return self.dlg.selectCB.isChecked()
 
     def updateNFeatLB(self):
-        self.dlg.currentFeatLB.setText(str(self.currentIndexFid + 1))
-        self.dlg.nFeatLB.setText(str(len(self.allIds)))
+        self.dlg.setCounters(str(self.currentIndexFid + 1), str(len(self.allIds)))
 
     def getFeature(self, fid):
         feat = QgsFeature()
@@ -275,23 +275,43 @@ class Navtable(QObject):
         self.dlg.deleteBT.setEnabled(False)
         self.dlg.deleteBT.setStyleSheet("")
 
-    def filter(self):
+    def filter_by_expression(self):
 
-        filter = NTExpressionBuilder(self.layer, self.currentExpression)
+        dialog = NTExpressionBuilder(self.layer, self.currentExpression)
 
-        if filter.exec_():
-            self.currentExpression = filter.expressionBuilder.expressionText()
+        if dialog.exec_():
+            expression = dialog.expressionBuilder.expressionText()
+            self.filter(expression)
 
-            if self.currentExpression != '':
-                expr = QgsExpression(self.currentExpression)
-                selection = self.layer.getFeatures(QgsFeatureRequest(expr))
-                self.allIds = [s.id() for s in selection]
-                self.dlg.setWindowTitle('NavTable - {} ({})'.format(self.layer.name(), 'Filtered'))
+    def filter_by_form(self):
 
-            if len(self.allIds) == 0 or self.currentExpression == '':
-                self.allIds = self.layer.allFeatureIds()
-                self.dlg.setWindowTitle('NavTable - ' + self.layer.name())
+        dialog = NTSelectByFormDialog(self.layer, self.iface)
 
-            self.currentIndexFid = 0
-            newFid = self.allIds[self.currentIndexFid]
-            self.update(newFid, self.currentIndexFid)
+        if dialog.exec_():
+            expression = dialog.expression
+            self.filter(expression)
+
+    def filter(self, expression):
+
+        self.currentExpression = expression
+
+        if self.currentExpression != '':
+            expr = QgsExpression(self.currentExpression)
+            selection = self.layer.getFeatures(QgsFeatureRequest(expr))
+            self.allIds = [s.id() for s in selection]
+            self.dlg.setWindowTitle('NavTable - {} ({})'.format(self.layer.name(), 'Filtered'))
+
+        if len(self.allIds) == 0 or self.currentExpression == '':
+            self.allIds = self.layer.allFeatureIds()
+            self.dlg.setWindowTitle('NavTable - ' + self.layer.name())
+
+        self.currentIndexFid = 0
+        newFid = self.allIds[self.currentIndexFid]
+        self.update(newFid, self.currentIndexFid)
+
+    # Lógica para poder ordenar los registros según un atributo
+    # featureRequest = QgsFeatureRequest()
+    # featureRequest.addOrderBy("parroquia", True)
+    # feats = self.layer.getFeatures(featureRequest)
+    # self.allIds = [f.id() for f in feats]
+    # Lógica para poder ordenar los registros según un atributo
