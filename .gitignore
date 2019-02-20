@@ -125,3 +125,5 @@ dmypy.json
 .settings
 .project
 .pydevproject
+
+*.qm

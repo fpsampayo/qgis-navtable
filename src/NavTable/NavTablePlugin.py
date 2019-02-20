@@ -20,19 +20,21 @@
  ***************************************************************************/
 """
 
-from qgis.PyQt.QtGui import *
-from qgis.PyQt.QtWidgets import *
-from qgis.PyQt.QtCore import QObject, QSettings, QTranslator, qVersion, QCoreApplication
-from qgis.core import *
-from qgis.core import QgsVectorLayer
-from .gui.NTMainPanel import NTMainPanel
 import os.path
 
+from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction
+from qgis.PyQt.QtCore import QObject, QSettings, QTranslator, qVersion, QCoreApplication
+from qgis.core import Qgis
+from qgis.core import QgsVectorLayer
 
-class Navtable(QObject):
+from NavTable.gui.NTMainPanel import NTMainPanel
+
+
+class NavTablePlugin(QObject):
 
     def __init__(self, iface):
-        super(Navtable, self).__init__()
+        super().__init__()
         # Save reference to the QGIS interface
         self.iface = iface
         # initialize plugin directory
