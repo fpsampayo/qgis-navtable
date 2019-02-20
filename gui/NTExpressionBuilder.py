@@ -1,5 +1,23 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""
+/***************************************************************************
+ Navtable
+                                 A QGIS plugin
+ Navtable
+                              -------------------
+        begin                : 2019-02-20
+        copyright            : (C) 2013 by Francisco P. Sampayo
+        email                : fpsampayo@gmail.com
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+"""
 
 import os
 from qgis.PyQt import uic
@@ -13,7 +31,7 @@ WIDGET, BASE = uic.loadUiType(
 class NTExpressionBuilder(BASE, WIDGET):
 
     def __init__(self, layer, expression):
-        super(NTExpressionBuilder, self).__init__(None)
+        super().__init__(None)
         self.setupUi(self)
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
@@ -33,6 +51,6 @@ class NTExpressionBuilder(BASE, WIDGET):
             return
 
         if self.expressionBuilder.isExpressionValid() or \
-            self.expressionBuilder.expressionText() == '':
+                self.expressionBuilder.expressionText() == '':
             self.expressionBuilder.saveToRecent()
-            super(NTExpressionBuilder, self).accept()
+            super().accept()
