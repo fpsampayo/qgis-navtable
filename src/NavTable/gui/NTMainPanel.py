@@ -22,15 +22,16 @@
 
 import os
 import math
+
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QIntValidator
-from qgis.core import QgsApplication, QgsFeature, QgsFeatureRequest, QgsExpression, Qgis
+from qgis.core import QgsApplication, QgsFeature, QgsFeatureRequest, QgsExpression
 from qgis.gui import QgsAttributeDialog
 
-from .NTSelectByFormDialog import NTSelectByFormDialog
-from .NTExpressionBuilder import NTExpressionBuilder
-from .NTFieldSelect import NTFieldSelect
+from NavTable.gui.NTSelectByFormDialog import NTSelectByFormDialog
+from NavTable.gui.NTExpressionBuilder import NTExpressionBuilder
+from NavTable.gui.NTFieldSelect import NTFieldSelect
 
 pluginPath = os.path.split(os.path.dirname(__file__))[0]
 WIDGET, BASE = uic.loadUiType(
@@ -89,7 +90,8 @@ class NTMainPanel(BASE, WIDGET):
 
         self.validator.setRange(1, int(max))
 
-    def keyPressEvent(self, event):
+    @staticmethod
+    def keyPressEvent(event):
 
         if event.key() == Qt.Key_Enter:
             pass
