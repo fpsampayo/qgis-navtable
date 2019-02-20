@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """
 /***************************************************************************
  Navtable
@@ -21,7 +21,7 @@
  This script initializes the plugin, making it known to QGIS.
 """
 
+
 def classFactory(iface):
-    # load Navtable class from file Navtable
     from .navtable import Navtable
     return Navtable(iface)

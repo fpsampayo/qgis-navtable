@@ -1,9 +1,27 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+
+"""
+/***************************************************************************
+ Navtable
+                                 A QGIS plugin
+ Navtable
+                              -------------------
+        begin                : 2019-02-20
+        copyright            : (C) 2013 by Francisco P. Sampayo
+        email                : fpsampayo@gmail.com
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+"""
 
 import os
 from qgis.PyQt import uic
-from qgis.PyQt.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QCheckBox, QHBoxLayout
 from qgis.PyQt.QtCore import Qt
 from qgis.core import QgsFeatureRequest
 
@@ -11,10 +29,11 @@ pluginPath = os.path.split(os.path.dirname(__file__))[0]
 WIDGET, BASE = uic.loadUiType(
     os.path.join(pluginPath, 'ui', 'field_select.ui'))
 
+
 class NTFieldSelect(BASE, WIDGET):
 
     def __init__(self, layer):
-        super(NTFieldSelect, self).__init__(None)
+        super().__init__(None)
         self.setupUi(self)
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.setWindowTitle(self.tr('Sort NavTable Features by field'))

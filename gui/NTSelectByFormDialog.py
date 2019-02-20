@@ -1,17 +1,37 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
+"""
+/***************************************************************************
+ Navtable
+                                 A QGIS plugin
+ Navtable
+                              -------------------
+        begin                : 2019-02-20
+        copyright            : (C) 2013 by Francisco P. Sampayo
+        email                : fpsampayo@gmail.com
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+"""
 
 import os
-from qgis.PyQt.QtWidgets import QDialog, QVBoxLayout, QDialogButtonBox, QToolButton
+from qgis.PyQt.QtWidgets import QDialog, QVBoxLayout
 from qgis.PyQt.QtCore import Qt, QCoreApplication
 from qgis.gui import QgsAttributeForm, QgsAttributeEditorContext
 
 pluginPath = os.path.split(os.path.dirname(__file__))[0]
 
+
+# noinspection PyPep8
 class NTSelectByFormDialog(QDialog):
 
     def __init__(self, layer, iface):
-        super(NTSelectByFormDialog, self).__init__(None)
+        super().__init__(None)
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
         layout = QVBoxLayout()
@@ -27,7 +47,7 @@ class NTSelectByFormDialog(QDialog):
         self.form.setMode(3)
         self.configureForm()
         layout.addWidget(self.form)
-        
+
         self.form.zoomToFeatures.connect(self.zoomToFeatures)
 
         self.form.closed.connect(self.close)
@@ -46,7 +66,7 @@ class NTSelectByFormDialog(QDialog):
                 for c3 in c2.children():
                     try:
                         if c3.text() == QCoreApplication.translate("QgsAttributeForm", "&Select features") or \
-                           c3.text() == QCoreApplication.translate("QgsAttributeForm", "&Flash features"):
+                                c3.text() == QCoreApplication.translate("QgsAttributeForm", "&Flash features"):
                             c3.hide()
                         elif c3.text() == QCoreApplication.translate("QgsAttributeForm", "&Zoom to features"):
                             c3.setText("Ok")
@@ -56,5 +76,5 @@ class NTSelectByFormDialog(QDialog):
     def zoomToFeatures(self, filter):
 
         self.expression = filter
-        super(NTSelectByFormDialog, self).accept()
-        
+        super().accept()
+

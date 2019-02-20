@@ -1,4 +1,3 @@
-# -*- coding: utf8 -*-
 
 """
 /***************************************************************************
@@ -20,6 +19,7 @@
  *                                                                         *
  ***************************************************************************/
 """
+
 from qgis.PyQt.QtGui import *
 from qgis.PyQt.QtWidgets import *
 from qgis.PyQt.QtCore import QObject, QSettings, QTranslator, qVersion, QCoreApplication
@@ -47,7 +47,7 @@ class Navtable(QObject):
 
             if qVersion() > '4.3.3':
                 QCoreApplication.installTranslator(self.translator)
-        
+
     def initGui(self):
         # Create action that will start plugin configuration
         icon_path = os.path.join(self.plugin_dir, 'icon', 'icon.png')
@@ -70,9 +70,11 @@ class Navtable(QObject):
 
         self.layer = self.iface.activeLayer()
 
-        #Comprobamos si existe alguna capa y si esta es vectorial
-        if self.layer == None or not isinstance(self.layer, QgsVectorLayer):
-            self.iface.messageBar().pushMessage("Invalid Layer", "NavTable only works on a vector layer", level=Qgis.Warning)
+        # Comprobamos si existe alguna capa y si esta es vectorial
+        if self.layer is None or not isinstance(self.layer, QgsVectorLayer):
+            self.iface.messageBar().pushMessage("Invalid Layer",
+                                                "NavTable only works on a vector layer",
+                                                level=Qgis.Warning)
         else:
             self.dlg = NTMainPanel(self.iface, self.layer)
             self.dlg.show()

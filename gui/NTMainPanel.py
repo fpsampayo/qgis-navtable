@@ -1,7 +1,27 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
 
-import os, math
+"""
+/***************************************************************************
+ Navtable
+                                 A QGIS plugin
+ Navtable
+                              -------------------
+        begin                : 2019-02-20
+        copyright            : (C) 2013 by Francisco P. Sampayo
+        email                : fpsampayo@gmail.com
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+"""
+
+import os
+import math
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QIntValidator
@@ -20,7 +40,7 @@ WIDGET, BASE = uic.loadUiType(
 class NTMainPanel(BASE, WIDGET):
 
     def __init__(self, iface, vlayer):
-        super(NTMainPanel, self).__init__(None)
+        super().__init__(None)
         self.setupUi(self)
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
@@ -35,7 +55,7 @@ class NTMainPanel(BASE, WIDGET):
 
         self.previousDialog = self.widget_form
 
-        self.validator = QIntValidator(1,1)
+        self.validator = QIntValidator(1, 1)
         self.currentFeatLB.setValidator(self.validator)
 
         self.nextBT.clicked.connect(self.next)
@@ -74,7 +94,7 @@ class NTMainPanel(BASE, WIDGET):
         if event.key() == Qt.Key_Enter:
             pass
         else:
-            super(NTMainPanel, self).keyPressEvent(event)
+            super().keyPressEvent(event)
 
     def next(self):
         newIndex = self.currentIndexFid + 1
