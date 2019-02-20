@@ -22,19 +22,21 @@
 # translation
 FORMS = ../ui/main_panel.ui ../ui/field_select.ui ../ui/expressionBuilderDialog.ui
 SOURCES = ../navtable.py ../gui/NTExpressionBuilder.py ../gui/NTFieldSelect.py ../gui/NTMainPanel.py ../gui/NTSelectByFormDialog.py
-TRANSLATIONS = i18n/navtable_en.ts i18n/navtable_es.ts
+TRANSLATIONS = src/NavTable/i18n/navtable_en.ts src/NavTable/i18n/navtable_es.ts
 
 # global
 
+SOURCE_CODE = src/NavTable
+
 PLUGINNAME = NavTable
 
-PY_FILES = __init__.py navtable.py
+PY_FILES = __init__.py NavTablePlugin.py
 
 PY_MODULES = gui
 
 EXTRAS = metadata.txt icon/icon.png
 
-FOLDERS = icon ui
+FOLDERS = $(SOURCE_CODE)/icon $(SOURCE_CODE)/ui
 
 UI_FILES = ui/main_panel.ui ui/field_select.ui ui/expressionBuilderDialog.ui
 
@@ -48,12 +50,12 @@ deploy_temp: transclean transcompile
 	rm -rf ./dist
 	mkdir -p ./dist/$(PLUGINNAME)
 	mkdir -p ./dist/$(PLUGINNAME)/$(PY_MODULES)
-	cp -vrf $(PY_MODULES)/*.py ./dist/$(PLUGINNAME)/$(PY_MODULES)/
-	cp -vf $(PY_FILES) ./dist/$(PLUGINNAME)/
+	cp -vrf $(SOURCE_CODE)/$(PY_MODULES)/*.py ./dist/$(PLUGINNAME)/$(PY_MODULES)/
+	cp -vf $(SOURCE_CODE)/*.py ./dist/$(PLUGINNAME)/
 	cp -vrf $(FOLDERS) ./dist/$(PLUGINNAME)/
-	cp -vf metadata.txt ./dist/$(PLUGINNAME)/
+	cp -vf $(SOURCE_CODE)/metadata.txt ./dist/$(PLUGINNAME)/
 	mkdir -p ./dist/$(PLUGINNAME)/i18n
-	cp -vf i18n/*.qm ./dist/$(PLUGINNAME)/i18n/
+	cp -vf $(SOURCE_CODE)/i18n/*.qm ./dist/$(PLUGINNAME)/i18n/
 
 zip: deploy_temp
 	rm -f $(PLUGINNAME).zip
@@ -81,4 +83,4 @@ transcompile: $(TRANSLATIONS:.ts=.qm)
 # transclean
 # deletes all .qm files
 transclean:
-	rm -f i18n/*.qm
+	rm -f $(SOURCE_CODE)/i18n/*.qm

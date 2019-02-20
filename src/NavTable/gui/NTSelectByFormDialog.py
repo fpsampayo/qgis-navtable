@@ -20,6 +20,7 @@
 """
 
 import os
+
 from qgis.PyQt.QtWidgets import QDialog, QVBoxLayout
 from qgis.PyQt.QtCore import Qt, QCoreApplication
 from qgis.gui import QgsAttributeForm, QgsAttributeEditorContext
