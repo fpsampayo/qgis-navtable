@@ -23,6 +23,8 @@ import os
 
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import Qt
+from qgis.core import QgsApplication
+from NavTable.gui.NTSelectByFormDialog import NTSelectByFormDialog
 
 pluginPath = os.path.split(os.path.dirname(__file__))[0]
 WIDGET, BASE = uic.loadUiType(
@@ -31,10 +33,13 @@ WIDGET, BASE = uic.loadUiType(
 
 class NTExpressionBuilder(BASE, WIDGET):
 
-    def __init__(self, layer, expression):
+    def __init__(self, layer, expression, iface):
         super().__init__(None)
         self.setupUi(self)
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
+
+        self.layer = layer
+        self.iface = iface
 
         self.setWindowTitle(self.tr('Filter NavTable Features by Expression'))
         self.expressionBuilder = self.mExpressionBuilderWidget
@@ -42,8 +47,20 @@ class NTExpressionBuilder(BASE, WIDGET):
         self.expressionBuilder.loadFieldNames()
         self.expressionBuilder.loadRecent()
 
+        self.btnFilterForm.setText(self.tr('Add Expression by Form'))
+        self.btnFilterForm.setIcon(QgsApplication.getThemeIcon('mIconFormSelect.svg'))
+        self.btnFilterForm.clicked.connect(self.formExpression)
+
         self.initialExpression = expression
         self.expressionBuilder.setExpressionText(expression)
+
+    def formExpression(self):
+
+        dialog = NTSelectByFormDialog(self.layer, self.iface)
+
+        if dialog.exec_():
+            self.expressionBuilder.setExpressionText(dialog.expression)
+
 
     def accept(self):
 
