@@ -32,7 +32,7 @@ class NTSelectByFormDialog(QDialog):
 
     def __init__(self, layer, iface):
         super().__init__(None)
-        self.setWindowFlag(Qt.WindowStaysOnTopHint)
+        self.setWindowModality(Qt.WindowModal)
 
         layout = QVBoxLayout()
         layout.setMargin(0)

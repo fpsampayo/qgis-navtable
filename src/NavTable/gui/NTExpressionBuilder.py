@@ -36,7 +36,6 @@ class NTExpressionBuilder(BASE, WIDGET):
     def __init__(self, layer, expression, iface):
         super().__init__(None)
         self.setupUi(self)
-        self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
         self.layer = layer
         self.iface = iface

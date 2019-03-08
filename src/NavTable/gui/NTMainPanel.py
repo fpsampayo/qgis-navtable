@@ -44,7 +44,6 @@ class NTMainPanel(BASE, WIDGET):
     def __init__(self, iface, vlayer):
         super().__init__(None)
         self.setupUi(self)
-        self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
         self.iface = iface
         self.layer = vlayer
