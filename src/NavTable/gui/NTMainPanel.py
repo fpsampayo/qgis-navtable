@@ -26,6 +26,7 @@ import math
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QIntValidator
+from qgis.PyQt.QtWidgets import QDialog
 from qgis.core import QgsApplication, QgsFeature, QgsFeatureRequest, QgsExpression
 from qgis.gui import QgsAttributeDialog
 
@@ -88,8 +89,7 @@ class NTMainPanel(BASE, WIDGET):
 
         self.validator.setRange(1, int(max))
 
-    @staticmethod
-    def keyPressEvent(event):
+    def keyPressEvent(self, event):
 
         if event.key() == Qt.Key_Enter:
             pass
