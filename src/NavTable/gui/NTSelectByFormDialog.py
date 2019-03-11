@@ -21,19 +21,18 @@
 
 import os
 
-from qgis.PyQt.QtWidgets import QDialog, QVBoxLayout
-from qgis.PyQt.QtCore import Qt, QCoreApplication
+from qgis.PyQt.QtWidgets import QDialog, QVBoxLayout, QWidget, QDialogButtonBox
+from qgis.PyQt.QtCore import Qt
 from qgis.gui import QgsAttributeForm, QgsAttributeEditorContext
 
 pluginPath = os.path.split(os.path.dirname(__file__))[0]
 
 
-# noinspection PyPep8
 class NTSelectByFormDialog(QDialog):
 
     def __init__(self, layer, iface):
         super().__init__(None)
-        self.setWindowFlag(Qt.WindowStaysOnTopHint)
+        self.setWindowModality(Qt.WindowModal)
 
         layout = QVBoxLayout()
         layout.setMargin(0)
@@ -60,22 +59,21 @@ class NTSelectByFormDialog(QDialog):
     def configureForm(self):
         '''
         Hack to modify QgsAttributeForm
-        :return:
         '''
-        for c1 in self.form.children():
-            for c2 in c1.children():
-                for c3 in c2.children():
-                    try:
-                        if c3.text() == QCoreApplication.translate("QgsAttributeForm", "&Select features") or \
-                                c3.text() == QCoreApplication.translate("QgsAttributeForm", "&Flash features"):
-                            c3.hide()
-                        elif c3.text() == QCoreApplication.translate("QgsAttributeForm", "&Zoom to features"):
-                            c3.setText("Ok")
-                    except:
-                        pass
+
+        self.form.findChild(QWidget, 'searchButtonBox').hide()
+
+        self.buttonBox = QDialogButtonBox()
+        self.buttonBox.setOrientation(Qt.Horizontal)
+        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
+        self.buttonBox.setObjectName("buttonBox")
+
+        self.buttonBox.accepted.connect(self.form.searchZoomTo)
+        self.buttonBox.rejected.connect(self.reject)
+
+        self.form.layout().addWidget(self.buttonBox)
 
     def zoomToFeatures(self, filter):
 
         self.expression = filter
         super().accept()
-

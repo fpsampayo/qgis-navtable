@@ -26,6 +26,7 @@ import math
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QIntValidator
+from qgis.PyQt.QtWidgets import QDialog
 from qgis.core import QgsApplication, QgsFeature, QgsFeatureRequest, QgsExpression
 from qgis.gui import QgsAttributeDialog
 
@@ -43,14 +44,12 @@ class NTMainPanel(BASE, WIDGET):
     def __init__(self, iface, vlayer):
         super().__init__(None)
         self.setupUi(self)
-        self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
         self.iface = iface
         self.layer = vlayer
 
         self.setWindowTitle('NavTable - ' + self.layer.name())
         self.exprFilterBT.setIcon(QgsApplication.getThemeIcon('mIconExpressionSelect.svg'))
-        self.formFilterBT.setIcon(QgsApplication.getThemeIcon('mIconFormSelect.svg'))
         self.removeFilterBT.setIcon(QgsApplication.getThemeIcon('mActionDeselectAll.svg'))
         self.orderByBT.setIcon(QgsApplication.getThemeIcon('sort.svg'))
 
@@ -65,7 +64,6 @@ class NTMainPanel(BASE, WIDGET):
         self.firstBT.clicked.connect(self.first)
         self.orderByBT.clicked.connect(self.orderBy)
         self.exprFilterBT.clicked.connect(self.filter_by_expression)
-        self.formFilterBT.clicked.connect(self.filter_by_form)
         self.removeFilterBT.clicked.connect(self.removeFilter)
         self.deleteBT.clicked.connect(self.deleteFeature)
         self.currentFeatLB.returnPressed.connect(self.manual)
@@ -90,8 +88,7 @@ class NTMainPanel(BASE, WIDGET):
 
         self.validator.setRange(1, int(max))
 
-    @staticmethod
-    def keyPressEvent(event):
+    def keyPressEvent(self, event):
 
         if event.key() == Qt.Key_Enter:
             pass
@@ -245,7 +242,7 @@ class NTMainPanel(BASE, WIDGET):
 
     def filter_by_expression(self):
 
-        dialog = NTExpressionBuilder(self.layer, self.currentExpression)
+        dialog = NTExpressionBuilder(self.layer, self.currentExpression, self.iface)
 
         if dialog.exec_():
             expression = dialog.expressionBuilder.expressionText()

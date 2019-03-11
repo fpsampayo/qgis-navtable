@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="es_ES" sourcelanguage="en">
+<TS version="2.1" language="es_ES" sourcelanguage="en">
 <context>
     <name>Dialog</name>
     <message>
-        <location filename="../ui/expressionBuilderDialog.ui" line="14"/>
+        <location filename="../ui/expressionBuilderDialog.ui" line="17"/>
         <source>Dialog</source>
         <translation></translation>
     </message>
@@ -35,46 +35,41 @@
     </message>
     <message>
         <location filename="../ui/main_panel.ui" line="136"/>
-        <source>Filter NavTable Features by Form</source>
-        <translation>Filtrar Elementos de NavTable por Formulario</translation>
-    </message>
-    <message>
-        <location filename="../ui/main_panel.ui" line="158"/>
         <source>Filter NavTable Features by Expression</source>
         <translation>Filtrar Elementos de NavTable por Expresión</translation>
     </message>
     <message>
-        <location filename="../ui/main_panel.ui" line="203"/>
+        <location filename="../ui/main_panel.ui" line="181"/>
         <source>&lt;&lt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/main_panel.ui" line="210"/>
+        <location filename="../ui/main_panel.ui" line="188"/>
         <source>&lt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/main_panel.ui" line="224"/>
+        <location filename="../ui/main_panel.ui" line="202"/>
         <source>0</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/main_panel.ui" line="236"/>
+        <location filename="../ui/main_panel.ui" line="214"/>
         <source>/</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/main_panel.ui" line="251"/>
+        <location filename="../ui/main_panel.ui" line="229"/>
         <source>&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/main_panel.ui" line="261"/>
+        <location filename="../ui/main_panel.ui" line="239"/>
         <source>&gt;&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../ui/main_panel.ui" line="275"/>
+        <location filename="../ui/main_panel.ui" line="253"/>
         <source>Delete</source>
         <translation>Eliminar</translation>
     </message>
@@ -84,7 +79,7 @@
         <translation type="obsolete">Ascendente</translation>
     </message>
     <message>
-        <location filename="../ui/field_select.ui" line="83"/>
+        <location filename="../ui/field_select.ui" line="86"/>
         <source>Ascending</source>
         <translation>Ascendente</translation>
     </message>
@@ -92,15 +87,20 @@
 <context>
     <name>NTExpressionBuilder</name>
     <message>
-        <location filename="../gui/NTExpressionBuilder.py" line="20"/>
+        <location filename="../gui/NTExpressionBuilder.py" line="43"/>
         <source>Filter NavTable Features by Expression</source>
         <translation>Filtrar Elementos de NavTable por Expresión</translation>
+    </message>
+    <message>
+        <location filename="../gui/NTExpressionBuilder.py" line="49"/>
+        <source>Add Expression by Form</source>
+        <translation>Expresión desde formulario</translation>
     </message>
 </context>
 <context>
     <name>NTFieldSelect</name>
     <message>
-        <location filename="../gui/NTFieldSelect.py" line="20"/>
+        <location filename="../gui/NTFieldSelect.py" line="39"/>
         <source>Sort NavTable Features by field</source>
         <translation>Ordenar Elementos de NavTable por campos</translation>
     </message>
@@ -108,7 +108,7 @@
 <context>
     <name>NTMainPanel</name>
     <message>
-        <location filename="../gui/NTMainPanel.py" line="253"/>
+        <location filename="../gui/NTMainPanel.py" line="272"/>
         <source>Filtered</source>
         <translation>Filtrado</translation>
     </message>
@@ -116,27 +116,9 @@
 <context>
     <name>NTSelectByFormDialog</name>
     <message>
-        <location filename="../gui/NTSelectByFormDialog.py" line="35"/>
+        <location filename="../gui/NTSelectByFormDialog.py" line="55"/>
         <source>Filter NavTable Features by Form</source>
         <translation>Filtrar Elementos de NavTable por Formulario</translation>
-    </message>
-</context>
-<context>
-    <name>QgsAttributeForm</name>
-    <message>
-        <location filename="../gui/NTSelectByFormDialog.py" line="48"/>
-        <source>&amp;Select features</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../gui/NTSelectByFormDialog.py" line="49"/>
-        <source>&amp;Flash features</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../gui/NTSelectByFormDialog.py" line="51"/>
-        <source>&amp;Zoom to features</source>
-        <translation></translation>
     </message>
 </context>
 </TS>
