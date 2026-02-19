@@ -26,9 +26,9 @@ import math
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QIntValidator
-from qgis.PyQt.QtWidgets import QDialog
+from qgis.PyQt.QtWidgets import QDialog, QWidget
 from qgis.core import QgsApplication, QgsFeature, QgsFeatureRequest, QgsExpression
-from qgis.gui import QgsAttributeDialog
+from qgis.gui import QgsAttributeDialog, QgsDockWidget
 
 from NavTable.gui.NTSelectByFormDialog import NTSelectByFormDialog
 from NavTable.gui.NTExpressionBuilder import NTExpressionBuilder
@@ -39,11 +39,20 @@ WIDGET, BASE = uic.loadUiType(
     os.path.join(pluginPath, 'ui', 'main_panel.ui'))
 
 
-class NTMainPanel(BASE, WIDGET):
+class NTMainPanel(QgsDockWidget):
 
-    def __init__(self, iface, vlayer):
-        super().__init__(None)
-        self.setupUi(self)
+    def __init__(self, iface, vlayer, parent=None):
+        super(NTMainPanel, self).__init__(parent)
+        
+        # Load UI into a container widget
+        self.container = QWidget()
+        self.ui = WIDGET()
+        self.ui.setupUi(self.container)
+        self.setWidget(self.container)
+        
+        # Inject UI elements into self for easier access
+        for name, obj in self.ui.__dict__.items():
+            setattr(self, name, obj)
 
         self.iface = iface
         self.layer = vlayer
