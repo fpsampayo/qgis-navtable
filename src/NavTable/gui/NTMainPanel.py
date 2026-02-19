@@ -26,8 +26,8 @@ import math
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QIntValidator, QKeySequence
-from qgis.PyQt.QtWidgets import QDialog, QWidget, QShortcut
-from qgis.core import QgsApplication, QgsFeature, QgsFeatureRequest, QgsExpression, QgsMapLayerProxyModel, QgsVectorLayer
+from qgis.PyQt.QtWidgets import QDialog, QWidget, QShortcut, QMessageBox
+from qgis.core import QgsApplication, QgsFeature, QgsFeatureRequest, QgsExpression, QgsMapLayerProxyModel, QgsVectorLayer, Qgis
 from qgis.gui import QgsAttributeDialog, QgsDockWidget, QgsMapLayerComboBox
 
 from NavTable.gui.NTSelectByFormDialog import NTSelectByFormDialog
@@ -97,6 +97,7 @@ class NTMainPanel(QgsDockWidget):
         self.orderByBT.setIcon(QgsApplication.getThemeIcon('sort.svg'))
         self.zoomBT.setIcon(QgsApplication.getThemeIcon('mActionZoomToSelected.svg'))
         self.panBT.setIcon(QgsApplication.getThemeIcon('mActionPanToSelected.svg'))
+        self.deleteBT.setIcon(QgsApplication.getThemeIcon('mActionDeleteSelected.svg'))
 
         self.previousDialog = self.widget_form
         self.validator = QIntValidator(1, 1)
@@ -117,8 +118,6 @@ class NTMainPanel(QgsDockWidget):
         self.selectBT.clicked.connect(self.toggle_selection)
         self.selectCB.stateChanged.connect(self.update_ui_states)
 
-        self.layer.editingStarted.connect(self.activateEdit)
-        self.layer.editingStopped.connect(self.deactivateEdit)
         self.layer.selectionChanged.connect(self.update_select_button_state)
         self.layer.selectionChanged.connect(self.updateNFeatLB)
 
@@ -132,8 +131,9 @@ class NTMainPanel(QgsDockWidget):
         self.update_select_button_state()
         self.updateNFeatLB() # This will enable removeFilterBT if there is a selection
         
-        if self.layer.isEditable():
-            self.activateEdit()
+        # Enable delete button if layer is not read-only
+        self.deleteBT.setEnabled(not self.layer.readOnly())
+        self.deleteBT.setStyleSheet("background-color: #ffcccc; border: 1px solid red;")
 
     def update_ui_states(self):
         # Yellow background ONLY if the CURRENT feature is selected
@@ -270,8 +270,8 @@ class NTMainPanel(QgsDockWidget):
         filtered_count = len(self.allIds)
         selected_count = self.layer.selectedFeatureCount()
         
-        # Base label for filtered/total
-        if filtered_count < total_count or self.currentExpression != '':
+        # Show filter info ONLY if there is an active expression
+        if self.currentExpression != '':
             max_label = "{} ({})".format(filtered_count, total_count)
         else:
             max_label = str(total_count)
@@ -316,20 +316,35 @@ class NTMainPanel(QgsDockWidget):
         self.previousDialog = self.currentDialog
 
     def deleteFeature(self):
-        self.layer.deleteFeature(self.currentFid)
-        self.allIds.remove(self.currentFid)
-        if self.currentIndexFid >= len(self.allIds) - 1:
-            self.currentIndexFid = self.currentIndexFid - 1
-        newFid = self.allIds[self.currentIndexFid]
-        self.update(newFid, self.currentIndexFid)
+        reply = QMessageBox.question(self, self.tr('Delete Feature'),
+                                   self.tr('Are you sure you want to delete the current feature?'),
+                                   QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
-    def activateEdit(self):
-        self.deleteBT.setEnabled(True)
-        self.deleteBT.setStyleSheet("background-color: red")
+        if reply != QMessageBox.Yes:
+            return
 
-    def deactivateEdit(self):
-        self.deleteBT.setEnabled(False)
-        self.deleteBT.setStyleSheet("")
+        fid_to_delete = self.currentFid
+        
+        # Atomic delete operation
+        self.layer.startEditing()
+        if self.layer.deleteFeature(fid_to_delete):
+            self.layer.commitChanges()
+            
+            if fid_to_delete in self.allIds:
+                self.allIds.remove(fid_to_delete)
+
+            if not self.allIds:
+                self.iface.messageBar().pushMessage("NavTable", self.tr("No more features in layer/filter"), level=Qgis.Info)
+                return
+
+            if self.currentIndexFid >= len(self.allIds):
+                self.currentIndexFid = len(self.allIds) - 1
+                
+            newFid = self.allIds[self.currentIndexFid]
+            self.update(newFid, self.currentIndexFid)
+        else:
+            self.layer.rollBack()
+            self.iface.messageBar().pushMessage("NavTable", self.tr("Error deleting feature"), level=Qgis.Critical)
 
     def filter_by_expression(self):
         dialog = NTExpressionBuilder(self.layer, self.currentExpression, self.iface)

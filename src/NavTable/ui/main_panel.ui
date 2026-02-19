@@ -276,6 +276,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QToolButton" name="deleteBT">
+         <property name="toolTip">
+          <string>Delete current feature</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="horizontalSpacer_4">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -287,20 +294,6 @@
           </size>
          </property>
         </spacer>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QPushButton" name="deleteBT">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>Delete</string>
-         </property>
-        </widget>
        </item>
       </layout>
      </item>
