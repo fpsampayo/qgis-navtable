@@ -95,6 +95,8 @@ class NTMainPanel(QgsDockWidget):
         self.exprFilterBT.setIcon(QgsApplication.getThemeIcon('mIconExpressionSelect.svg'))
         self.removeFilterBT.setIcon(QgsApplication.getThemeIcon('mActionDeselectAll.svg'))
         self.orderByBT.setIcon(QgsApplication.getThemeIcon('sort.svg'))
+        self.zoomBT.setIcon(QgsApplication.getThemeIcon('mActionZoomToSelected.svg'))
+        self.panBT.setIcon(QgsApplication.getThemeIcon('mActionPanToSelected.svg'))
 
         self.previousDialog = self.widget_form
 
@@ -110,9 +112,13 @@ class NTMainPanel(QgsDockWidget):
         self.removeFilterBT.clicked.connect(self.removeFilter)
         self.deleteBT.clicked.connect(self.deleteFeature)
         self.currentFeatLB.returnPressed.connect(self.manual)
+        self.zoomBT.clicked.connect(self.manual_zoom)
+        self.panBT.clicked.connect(self.manual_pan)
+        self.selectBT.clicked.connect(self.toggle_selection)
 
         self.layer.editingStarted.connect(self.activateEdit)
         self.layer.editingStopped.connect(self.deactivateEdit)
+        self.layer.selectionChanged.connect(self.update_select_button_state)
 
         self.allIds = self.layer.allFeatureIds()
         self.currentIndexFid = 0
@@ -120,9 +126,34 @@ class NTMainPanel(QgsDockWidget):
         self.currentExpression = ''
         self.update(self.currentFid, self.currentIndexFid)
 
+        self.update_select_button_state()
+
         self.removeFilterBT.setEnabled(False)
         if self.layer.isEditable():
             self.activateEdit()
+
+    def update_select_button_state(self):
+        if self.currentFid in self.layer.selectedFeatureIds():
+            self.selectBT.setIcon(QgsApplication.getThemeIcon('mActionDeselectAll.svg'))
+            self.selectBT.setToolTip(self.tr('Remove current feature from selection'))
+        else:
+            self.selectBT.setIcon(QgsApplication.getThemeIcon('mActionSelectRectangle.svg'))
+            self.selectBT.setToolTip(self.tr('Add current feature to selection'))
+
+    def toggle_selection(self):
+        if self.currentFid in self.layer.selectedFeatureIds():
+            self.layer.deselect(self.currentFid)
+        else:
+            self.layer.select(self.currentFid)
+
+    def manual_zoom(self):
+        self.iface.mapCanvas().zoomToFeatureIds(self.layer, [self.currentFid])
+
+    def manual_pan(self):
+        feat = self.getFeature(self.currentFid)
+        if feat and feat.geometry():
+            self.iface.mapCanvas().setCenter(feat.geometry().centroid().asPoint())
+            self.iface.mapCanvas().refresh()
 
     def change_layer(self, layer):
         if layer and isinstance(layer, QgsVectorLayer):
@@ -143,6 +174,14 @@ class NTMainPanel(QgsDockWidget):
             self.removeFilterBT.clicked.disconnect(self.removeFilter)
             self.deleteBT.clicked.disconnect(self.deleteFeature)
             self.currentFeatLB.returnPressed.disconnect(self.manual)
+            self.zoomBT.clicked.disconnect(self.manual_zoom)
+            self.panBT.clicked.disconnect(self.manual_pan)
+            self.selectBT.clicked.disconnect(self.toggle_selection)
+
+            try:
+                self.layer.selectionChanged.disconnect(self.update_select_button_state)
+            except:
+                pass
 
             self.setup_layer(layer)
         
@@ -188,49 +227,17 @@ class NTMainPanel(QgsDockWidget):
         self.updateNFeatLB()
         self.updateCanvas(feat)
         self.updateDialog(feat)
+        self.update_select_button_state()
         self.checkButtons()
 
     def updateCanvas(self, feat):
         if self.has_to_select():
             self.layer.selectByIds([self.currentFid])
 
-        geom = feat.geometry()
         if self.has_to_zoom():
-            self.zoomTo(geom.boundingBox())  # TODO: be careful with crs
+            self.manual_zoom()
         elif self.has_to_pan():
-            self.panTo(geom.centroid())  # TODO: be careful with crs
-
-    def zoomTo(self, newExtent):
-        '''
-        newExtend is bbox
-        '''
-        self.iface.mapCanvas().setExtent(newExtent)
-        self.iface.mapCanvas().refresh()
-
-    def panTo(self, newCenter):
-        '''
-        newCenter is QgsPoint geometry
-        Taked from: http://svn.reprojected.com/qgisplugins/trunk/refmap/refmap.py
-        '''
-        newCenterPoint = newCenter.asPoint()
-        currentExtent = self.iface.mapCanvas().extent()
-        currentCenter = currentExtent.center()
-        dx = math.fabs(newCenterPoint.x() - currentCenter.x())
-        dy = math.fabs(newCenterPoint.y() - currentCenter.y())
-        if (newCenterPoint.x() > currentCenter.x()):
-            currentExtent.setXMinimum(currentExtent.xMinimum() + dx)
-            currentExtent.setXMaximum(currentExtent.xMaximum() + dx)
-        else:
-            currentExtent.setXMinimum(currentExtent.xMinimum() - dx)
-            currentExtent.setXMaximum(currentExtent.xMaximum() - dx)
-        if (newCenterPoint.y() > currentCenter.y()):
-            currentExtent.setYMaximum(currentExtent.yMaximum() + dy)
-            currentExtent.setYMinimum(currentExtent.yMinimum() + dy)
-        else:
-            currentExtent.setYMaximum(currentExtent.yMaximum() - dy)
-            currentExtent.setYMinimum(currentExtent.yMinimum() - dy)
-        self.iface.mapCanvas().setExtent(currentExtent)
-        self.iface.mapCanvas().refresh()
+            self.manual_pan()
 
     def has_to_pan(self):
         return self.panCB.isChecked()
