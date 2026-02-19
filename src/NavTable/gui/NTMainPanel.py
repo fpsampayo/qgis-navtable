@@ -25,8 +25,8 @@ import math
 
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import Qt
-from qgis.PyQt.QtGui import QIntValidator
-from qgis.PyQt.QtWidgets import QDialog, QWidget
+from qgis.PyQt.QtGui import QIntValidator, QKeySequence
+from qgis.PyQt.QtWidgets import QDialog, QWidget, QShortcut
 from qgis.core import QgsApplication, QgsFeature, QgsFeatureRequest, QgsExpression, QgsMapLayerProxyModel, QgsVectorLayer
 from qgis.gui import QgsAttributeDialog, QgsDockWidget, QgsMapLayerComboBox
 
@@ -68,7 +68,22 @@ class NTMainPanel(QgsDockWidget):
 
         self.iface.currentLayerChanged.connect(self.handle_active_layer_changed)
 
+        self.setup_shortcuts()
         self.setup_layer(self.layer)
+
+    def setup_shortcuts(self):
+        QShortcut(QKeySequence(Qt.Key_Right), self, self.next)
+        QShortcut(QKeySequence(Qt.Key_Left), self, self.previous)
+        QShortcut(QKeySequence(Qt.Key_Home), self, self.first)
+        QShortcut(QKeySequence(Qt.Key_End), self, self.last)
+        QShortcut(QKeySequence("Ctrl+F"), self, self.filter_by_expression)
+        
+        delete_shortcut = QShortcut(QKeySequence(Qt.Key_Delete), self)
+        delete_shortcut.activated.connect(self.handle_delete_shortcut)
+
+    def handle_delete_shortcut(self):
+        if self.layer.isEditable():
+            self.deleteFeature()
 
     def handle_active_layer_changed(self, layer):
         if layer and isinstance(layer, QgsVectorLayer) and layer != self.layer:
@@ -137,13 +152,6 @@ class NTMainPanel(QgsDockWidget):
         self.nFeatLB.setText(max)
 
         self.validator.setRange(1, int(max))
-
-    def keyPressEvent(self, event):
-
-        if event.key() == Qt.Key_Enter:
-            pass
-        else:
-            super().keyPressEvent(event)
 
     def next(self):
         newIndex = self.currentIndexFid + 1
