@@ -27,8 +27,8 @@ from qgis.PyQt import uic
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QIntValidator
 from qgis.PyQt.QtWidgets import QDialog, QWidget
-from qgis.core import QgsApplication, QgsFeature, QgsFeatureRequest, QgsExpression
-from qgis.gui import QgsAttributeDialog, QgsDockWidget
+from qgis.core import QgsApplication, QgsFeature, QgsFeatureRequest, QgsExpression, QgsMapLayerProxyModel, QgsVectorLayer
+from qgis.gui import QgsAttributeDialog, QgsDockWidget, QgsMapLayerComboBox
 
 from NavTable.gui.NTSelectByFormDialog import NTSelectByFormDialog
 from NavTable.gui.NTExpressionBuilder import NTExpressionBuilder
@@ -57,6 +57,25 @@ class NTMainPanel(QgsDockWidget):
         self.iface = iface
         self.layer = vlayer
 
+        # Create layer selector manually
+        self.layerCB = QgsMapLayerComboBox()
+        self.layerCB.setFilters(QgsMapLayerProxyModel.VectorLayer)
+        self.layerCB.setLayer(self.layer)
+        self.layerCB.layerChanged.connect(self.change_layer)
+        
+        # Add it to the top of the layout
+        self.verticalLayout_2.insertWidget(0, self.layerCB)
+
+        self.iface.currentLayerChanged.connect(self.handle_active_layer_changed)
+
+        self.setup_layer(self.layer)
+
+    def handle_active_layer_changed(self, layer):
+        if layer and isinstance(layer, QgsVectorLayer) and layer != self.layer:
+            self.layerCB.setLayer(layer)
+
+    def setup_layer(self, layer):
+        self.layer = layer
         self.setWindowTitle('NavTable - ' + self.layer.name())
         self.exprFilterBT.setIcon(QgsApplication.getThemeIcon('mIconExpressionSelect.svg'))
         self.removeFilterBT.setIcon(QgsApplication.getThemeIcon('mActionDeselectAll.svg'))
@@ -89,6 +108,28 @@ class NTMainPanel(QgsDockWidget):
         self.removeFilterBT.setEnabled(False)
         if self.layer.isEditable():
             self.activateEdit()
+
+    def change_layer(self, layer):
+        if layer and isinstance(layer, QgsVectorLayer):
+            # Disconnect previous layer signals to avoid leaks
+            try:
+                self.layer.editingStarted.disconnect(self.activateEdit)
+                self.layer.editingStopped.disconnect(self.deactivateEdit)
+            except:
+                pass
+
+            # Disconnect button signals to avoid multiple connections
+            self.nextBT.clicked.disconnect(self.next)
+            self.previousBT.clicked.disconnect(self.previous)
+            self.lastBT.clicked.disconnect(self.last)
+            self.firstBT.clicked.disconnect(self.first)
+            self.orderByBT.clicked.disconnect(self.orderBy)
+            self.exprFilterBT.clicked.disconnect(self.filter_by_expression)
+            self.removeFilterBT.clicked.disconnect(self.removeFilter)
+            self.deleteBT.clicked.disconnect(self.deleteFeature)
+            self.currentFeatLB.returnPressed.disconnect(self.manual)
+
+            self.setup_layer(layer)
         
     def setCounters(self, current, max):
         
