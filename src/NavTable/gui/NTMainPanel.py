@@ -117,16 +117,14 @@ class NTMainPanel(QgsDockWidget):
         self.panBT.clicked.connect(self.manual_pan)
         self.selectBT.clicked.connect(self.toggle_selection)
         self.selectCB.stateChanged.connect(self.update_ui_states)
+        self.onlySelectedCB.stateChanged.connect(self.handle_only_selected_changed)
 
         self.layer.selectionChanged.connect(self.update_select_button_state)
         self.layer.selectionChanged.connect(self.updateNFeatLB)
+        self.layer.selectionChanged.connect(self.handle_selection_sync)
 
         # Initial state
-        self.allIds = self.layer.allFeatureIds()
-        self.currentIndexFid = 0
-        if self.allIds:
-            self.currentFid = self.allIds[self.currentIndexFid]
-            self.update(self.currentFid, self.currentIndexFid)
+        self.refresh_ids()
         
         self.update_select_button_state()
         self.updateNFeatLB() # This will enable removeFilterBT if there is a selection
@@ -135,6 +133,31 @@ class NTMainPanel(QgsDockWidget):
         self.deleteBT.setEnabled(not self.layer.readOnly())
         self.deleteBT.setStyleSheet("background-color: #ffcccc; border: 1px solid red;")
 
+    def handle_only_selected_changed(self):
+        self.refresh_ids()
+        self.update_ui_states()
+
+    def handle_selection_sync(self):
+        if self.onlySelectedCB.isChecked():
+            self.refresh_ids()
+
+    def refresh_ids(self):
+        if self.onlySelectedCB.isChecked():
+            self.allIds = self.layer.selectedFeatureIds()
+        elif self.currentExpression != '':
+            expr = QgsExpression(self.currentExpression)
+            selection = self.layer.getFeatures(QgsFeatureRequest(expr))
+            self.allIds = [s.id() for s in selection]
+        else:
+            self.allIds = self.layer.allFeatureIds()
+
+        self.currentIndexFid = 0
+        if self.allIds:
+            self.currentFid = self.allIds[self.currentIndexFid]
+            self.update(self.currentFid, self.currentIndexFid)
+        else:
+            self.updateNFeatLB()
+
     def update_ui_states(self):
         # Yellow background ONLY if the CURRENT feature is selected
         if self.currentFid in self.layer.selectedFeatureIds():
@@ -142,8 +165,8 @@ class NTMainPanel(QgsDockWidget):
         else:
             self.currentFeatLB.setStyleSheet("")
 
-        # Filter button highlight if an expression is active
-        if self.currentExpression != '':
+        # Filter button highlight if an expression is active or Only Selected is active
+        if self.currentExpression != '' or self.onlySelectedCB.isChecked():
             self.exprFilterBT.setStyleSheet("background-color: #fdfd96; border: 1px solid #cca300;")
         else:
             self.exprFilterBT.setStyleSheet("")
@@ -185,6 +208,8 @@ class NTMainPanel(QgsDockWidget):
                 self.layer.editingStarted.disconnect(self.activateEdit)
                 self.layer.editingStopped.disconnect(self.deactivateEdit)
                 self.layer.selectionChanged.disconnect(self.update_select_button_state)
+                self.layer.selectionChanged.disconnect(self.updateNFeatLB)
+                self.layer.selectionChanged.disconnect(self.handle_selection_sync)
                 
                 self.nextBT.clicked.disconnect(self.next)
                 self.previousBT.clicked.disconnect(self.previous)
@@ -198,6 +223,8 @@ class NTMainPanel(QgsDockWidget):
                 self.zoomBT.clicked.disconnect(self.manual_zoom)
                 self.panBT.clicked.disconnect(self.manual_pan)
                 self.selectBT.clicked.disconnect(self.toggle_selection)
+                self.selectCB.stateChanged.disconnect(self.update_ui_states)
+                self.onlySelectedCB.stateChanged.disconnect(self.handle_only_selected_changed)
             except:
                 pass
 
@@ -368,23 +395,14 @@ class NTMainPanel(QgsDockWidget):
     def filter(self, expression):
         self.currentExpression = expression
         self.is_sorted = False
-
+        
         if self.currentExpression != '':
-            expr = QgsExpression(self.currentExpression)
-            selection = self.layer.getFeatures(QgsFeatureRequest(expr))
-            self.allIds = [s.id() for s in selection]
-            self.setWindowTitle('NavTable - {} ({})'.format(self.layer.name(), self.tr('Filtered')))
             self.removeFilterBT.setEnabled(True)
-
-        if len(self.allIds) == 0 or self.currentExpression == '':
-            self.allIds = self.layer.allFeatureIds()
+            self.setWindowTitle('NavTable - {} ({})'.format(self.layer.name(), self.tr('Filtered')))
+        else:
             self.setWindowTitle('NavTable - ' + self.layer.name())
-            self.is_sorted = False
 
-        self.currentIndexFid = 0
-        if self.allIds:
-            newFid = self.allIds[self.currentIndexFid]
-            self.update(newFid, self.currentIndexFid)
+        self.refresh_ids()
 
     def orderBy(self):
         dialog = NTFieldSelect(self.layer)

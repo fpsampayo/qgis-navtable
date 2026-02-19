@@ -40,6 +40,13 @@
         <number>10</number>
        </property>
        <item alignment="Qt::AlignHCenter">
+        <widget class="QCheckBox" name="onlySelectedCB">
+         <property name="text">
+          <string>Only selected</string>
+         </property>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignHCenter">
         <widget class="QCheckBox" name="selectCB">
          <property name="enabled">
           <bool>true</bool>
