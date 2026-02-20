@@ -1,3 +1,4 @@
+
 """
 /***************************************************************************
  Navtable
@@ -23,9 +24,9 @@ import os
 import math
 
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtCore import Qt, QSize
 from qgis.PyQt.QtGui import QIntValidator, QKeySequence
-from qgis.PyQt.QtWidgets import QDialog, QWidget, QShortcut, QMessageBox
+from qgis.PyQt.QtWidgets import QDialog, QWidget, QShortcut, QMessageBox, QToolButton, QToolBar, QAction, QHBoxLayout, QLineEdit, QLabel
 from qgis.core import QgsApplication, QgsFeature, QgsFeatureRequest, QgsExpression, QgsMapLayerProxyModel, QgsVectorLayer, Qgis
 from qgis.gui import QgsAttributeDialog, QgsDockWidget, QgsMapLayerComboBox, QgsAttributeForm
 
@@ -48,6 +49,7 @@ class NTMainPanel(QgsDockWidget):
         self.ui.setupUi(self.container)
         self.setWidget(self.container)
         
+        # Inject UI elements
         for name, obj in self.ui.__dict__.items():
             setattr(self, name, obj)
 
@@ -56,11 +58,65 @@ class NTMainPanel(QgsDockWidget):
         self.currentExpression = ''
         self.is_sorted = False
 
+        # Create All Buttons manually for Toolbars
+        self.firstBT = QToolButton()
+        self.previousBT = QToolButton()
+        self.nextBT = QToolButton()
+        self.lastBT = QToolButton()
+        self.currentFeatLB = QLineEdit()
+        self.label = QLabel("/")
+        self.nFeatLB = QLabel("0")
+        
+        self.exprFilterBT = QToolButton()
+        self.removeFilterBT = QToolButton()
+        self.orderByBT = QToolButton()
+        self.selectBT = QToolButton()
+        self.zoomBT = QToolButton()
+        self.panBT = QToolButton()
+        self.editBT = QToolButton()
+        self.editBT.setCheckable(True)
+        self.saveBT = QToolButton()
+        self.deleteBT = QToolButton()
+        
+        self.validator = QIntValidator(1, 1)
+        self.currentFeatLB.setValidator(self.validator)
+        self.currentFeatLB.setAlignment(Qt.AlignCenter)
+        self.currentFeatLB.setMaximumWidth(50)
+        self.label.setStyleSheet("font-weight: bold; font-size: 11pt;")
+        self.nFeatLB.setStyleSheet("font-weight: bold; font-size: 11pt;")
+
+        # Apply global styling
+        self.setStyleSheet("""
+            QFrame#headerFrame, QFrame#footerFrame {
+                background-color: rgba(128, 128, 128, 0.1);
+                border: 1px solid rgba(128, 128, 128, 0.2);
+                border-radius: 4px;
+            }
+            QToolButton {
+                border: 1px solid transparent;
+                border-radius: 3px;
+                padding: 1px;
+                margin: 0px;
+                background-color: transparent;
+            }
+            QToolButton:hover {
+                background-color: rgba(128, 128, 128, 0.2);
+                border: 1px solid rgba(128, 128, 128, 0.4);
+            }
+            QLineEdit#currentFeatLB {
+                border: 1px solid rgba(128, 128, 128, 0.5);
+                border-radius: 2px;
+                background-color: palette(base);
+                color: palette(text);
+            }
+        """)
+
+        # Create layer selector
         self.layerCB = QgsMapLayerComboBox()
         self.layerCB.setFilters(QgsMapLayerProxyModel.VectorLayer)
         self.layerCB.setLayer(self.layer)
         self.layerCB.layerChanged.connect(self.change_layer)
-        self.verticalLayout_2.insertWidget(0, self.layerCB)
+        self.mainLayout.insertWidget(0, self.layerCB)
 
         self.iface.currentLayerChanged.connect(self.handle_active_layer_changed)
 
@@ -88,18 +144,90 @@ class NTMainPanel(QgsDockWidget):
     def setup_layer(self, layer):
         self.layer = layer
         self.setWindowTitle('NavTable - ' + self.layer.name())
+        
+        # 1. Navigation Toolbar
+        self.navToolbar = QToolBar()
+        self.navToolbar.setIconSize(QSize(20, 20))
+        self.navToolbar.setStyleSheet("border: none; background: transparent;")
+        
+        counterContainer = QWidget()
+        counterLayout = QHBoxLayout(counterContainer)
+        counterLayout.setContentsMargins(2, 0, 2, 0)
+        counterLayout.setSpacing(2)
+        counterLayout.addWidget(self.currentFeatLB)
+        counterLayout.addWidget(self.label)
+        counterLayout.addWidget(self.nFeatLB)
+        
+        self.navToolbar.addWidget(self.firstBT)
+        self.navToolbar.addWidget(self.previousBT)
+        self.navToolbar.addWidget(counterContainer)
+        self.navToolbar.addWidget(self.nextBT)
+        self.navToolbar.addWidget(self.lastBT)
+        
+        # 2. Actions Toolbar
+        self.actionsToolbar = QToolBar()
+        self.actionsToolbar.setIconSize(QSize(20, 20))
+        self.actionsToolbar.setStyleSheet("border: none; background: transparent;")
+        
+        # Filters and Sorting
+        self.actionsToolbar.addWidget(self.exprFilterBT)
+        self.actionsToolbar.addWidget(self.removeFilterBT)
+        self.actionsToolbar.addWidget(self.orderByBT)
+        self.actionsToolbar.addSeparator()
+        # View Actions
+        self.actionsToolbar.addWidget(self.selectBT)
+        self.actionsToolbar.addWidget(self.zoomBT)
+        self.actionsToolbar.addWidget(self.panBT)
+        self.actionsToolbar.addSeparator()
+        # Data Actions
+        self.actionsToolbar.addWidget(self.editBT)
+        self.actionsToolbar.addWidget(self.saveBT)
+        self.actionsToolbar.addWidget(self.deleteBT)
+        
+        # Center Toolbars
+        def center_widget(widget, layout):
+            while layout.count():
+                item = layout.takeAt(0)
+                if item.widget(): item.widget().deleteLater()
+            container = QWidget()
+            contLayout = QHBoxLayout(container)
+            contLayout.setContentsMargins(0, 0, 0, 0)
+            contLayout.addStretch()
+            contLayout.addWidget(widget)
+            contLayout.addStretch()
+            layout.addWidget(container)
+
+        center_widget(self.navToolbar, self.navToolbarLayout)
+        center_widget(self.actionsToolbar, self.actionsToolbarLayout)
+
+        # Tooltips
+        self.exprFilterBT.setToolTip(self.tr('Filter by Expression'))
+        self.removeFilterBT.setToolTip(self.tr('Remove Filter/Selection'))
+        self.orderByBT.setToolTip(self.tr('Sort Features'))
+        self.selectBT.setToolTip(self.tr('Select/Deselect Feature'))
+        self.zoomBT.setToolTip(self.tr('Zoom to Feature'))
+        self.panBT.setToolTip(self.tr('Pan to Feature'))
+        self.editBT.setToolTip(self.tr('Toggle Editing'))
+        self.saveBT.setToolTip(self.tr('Save Changes'))
+        self.deleteBT.setToolTip(self.tr('Delete Feature'))
+
+        # Icons
         self.exprFilterBT.setIcon(QgsApplication.getThemeIcon('mIconExpressionSelect.svg'))
         self.removeFilterBT.setIcon(QgsApplication.getThemeIcon('mActionDeselectAll.svg'))
         self.orderByBT.setIcon(QgsApplication.getThemeIcon('sort.svg'))
+        self.selectBT.setIcon(QgsApplication.getThemeIcon('mActionSelectRectangle.svg'))
         self.zoomBT.setIcon(QgsApplication.getThemeIcon('mActionZoomToSelected.svg'))
         self.panBT.setIcon(QgsApplication.getThemeIcon('mActionPanToSelected.svg'))
-        self.deleteBT.setIcon(QgsApplication.getThemeIcon('mActionDeleteSelected.svg'))
-        self.saveBT.setIcon(QgsApplication.getThemeIcon('mActionSaveEdits.svg'))
         self.editBT.setIcon(QgsApplication.getThemeIcon('mActionToggleEditing.svg'))
+        self.saveBT.setIcon(QgsApplication.getThemeIcon('mActionSaveEdits.svg'))
+        self.deleteBT.setIcon(QgsApplication.getThemeIcon('mActionDeleteSelected.svg'))
+        
+        self.firstBT.setIcon(QgsApplication.getThemeIcon('mActionDoubleArrowLeft.svg'))
+        self.previousBT.setIcon(QgsApplication.getThemeIcon('mActionArrowLeft.svg'))
+        self.nextBT.setIcon(QgsApplication.getThemeIcon('mActionArrowRight.svg'))
+        self.lastBT.setIcon(QgsApplication.getThemeIcon('mActionDoubleArrowRight.svg'))
 
         self.previousDialog = self.widget_form
-        self.validator = QIntValidator(1, 1)
-        self.currentFeatLB.setValidator(self.validator)
 
         # Connect signals
         self.nextBT.clicked.connect(self.next)
@@ -133,7 +261,6 @@ class NTMainPanel(QgsDockWidget):
         self.deleteBT.setEnabled(not self.layer.readOnly())
         self.deleteBT.setStyleSheet("background-color: #ffcccc; border: 1px solid red;")
         
-        # Sync edit button state without triggering signals if possible
         self.editBT.blockSignals(True)
         self.editBT.setChecked(self.layer.isEditable())
         self.editBT.blockSignals(False)
@@ -281,7 +408,11 @@ class NTMainPanel(QgsDockWidget):
     def setCounters(self, current, max):
         self.currentFeatLB.setText(current)
         self.nFeatLB.setText(max)
-        self.validator.setRange(1, int(max.split(' ')[0]))
+        try:
+            val_max = int(max.split(' ')[0])
+            self.validator.setRange(1, val_max)
+        except:
+            pass
 
     def next(self):
         if not self.can_proceed(): return
@@ -309,9 +440,12 @@ class NTMainPanel(QgsDockWidget):
 
     def manual(self):
         if not self.can_proceed(): return
-        newIndex = int(self.currentFeatLB.text()) - 1
-        newFid = self.allIds[newIndex]
-        self.update(newFid, newIndex)
+        try:
+            newIndex = int(self.currentFeatLB.text()) - 1
+            newFid = self.allIds[newIndex]
+            self.update(newFid, newIndex)
+        except:
+            pass
 
     def update(self, newFid, newIndex):
         feat = self.getFeature(newFid)
