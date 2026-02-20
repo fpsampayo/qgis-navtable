@@ -1,4 +1,3 @@
-
 """
 /***************************************************************************
  Navtable
@@ -28,7 +27,7 @@ from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QIntValidator, QKeySequence
 from qgis.PyQt.QtWidgets import QDialog, QWidget, QShortcut, QMessageBox
 from qgis.core import QgsApplication, QgsFeature, QgsFeatureRequest, QgsExpression, QgsMapLayerProxyModel, QgsVectorLayer, Qgis
-from qgis.gui import QgsAttributeDialog, QgsDockWidget, QgsMapLayerComboBox
+from qgis.gui import QgsAttributeDialog, QgsDockWidget, QgsMapLayerComboBox, QgsAttributeForm
 
 from NavTable.gui.NTSelectByFormDialog import NTSelectByFormDialog
 from NavTable.gui.NTExpressionBuilder import NTExpressionBuilder
@@ -44,13 +43,11 @@ class NTMainPanel(QgsDockWidget):
     def __init__(self, iface, vlayer, parent=None):
         super(NTMainPanel, self).__init__(parent)
         
-        # Load UI into a container widget
         self.container = QWidget()
         self.ui = WIDGET()
         self.ui.setupUi(self.container)
         self.setWidget(self.container)
         
-        # Inject UI elements into self
         for name, obj in self.ui.__dict__.items():
             setattr(self, name, obj)
 
@@ -59,7 +56,6 @@ class NTMainPanel(QgsDockWidget):
         self.currentExpression = ''
         self.is_sorted = False
 
-        # Create layer selector
         self.layerCB = QgsMapLayerComboBox()
         self.layerCB.setFilters(QgsMapLayerProxyModel.VectorLayer)
         self.layerCB.setLayer(self.layer)
@@ -98,6 +94,8 @@ class NTMainPanel(QgsDockWidget):
         self.zoomBT.setIcon(QgsApplication.getThemeIcon('mActionZoomToSelected.svg'))
         self.panBT.setIcon(QgsApplication.getThemeIcon('mActionPanToSelected.svg'))
         self.deleteBT.setIcon(QgsApplication.getThemeIcon('mActionDeleteSelected.svg'))
+        self.saveBT.setIcon(QgsApplication.getThemeIcon('mActionSaveEdits.svg'))
+        self.editBT.setIcon(QgsApplication.getThemeIcon('mActionToggleEditing.svg'))
 
         self.previousDialog = self.widget_form
         self.validator = QIntValidator(1, 1)
@@ -116,22 +114,51 @@ class NTMainPanel(QgsDockWidget):
         self.zoomBT.clicked.connect(self.manual_zoom)
         self.panBT.clicked.connect(self.manual_pan)
         self.selectBT.clicked.connect(self.toggle_selection)
+        self.saveBT.clicked.connect(self.save_edits)
+        self.editBT.clicked.connect(self.toggle_editing)
         self.selectCB.stateChanged.connect(self.update_ui_states)
         self.onlySelectedCB.stateChanged.connect(self.handle_only_selected_changed)
 
         self.layer.selectionChanged.connect(self.update_select_button_state)
         self.layer.selectionChanged.connect(self.updateNFeatLB)
         self.layer.selectionChanged.connect(self.handle_selection_sync)
+        self.layer.editingStarted.connect(self.handle_editing_started)
+        self.layer.editingStopped.connect(self.handle_editing_stopped)
 
         # Initial state
         self.refresh_ids()
-        
         self.update_select_button_state()
-        self.updateNFeatLB() # This will enable removeFilterBT if there is a selection
+        self.updateNFeatLB() 
         
-        # Enable delete button if layer is not read-only
         self.deleteBT.setEnabled(not self.layer.readOnly())
         self.deleteBT.setStyleSheet("background-color: #ffcccc; border: 1px solid red;")
+        
+        # Sync edit button state without triggering signals if possible
+        self.editBT.blockSignals(True)
+        self.editBT.setChecked(self.layer.isEditable())
+        self.editBT.blockSignals(False)
+
+    def handle_editing_started(self):
+        self.editBT.setChecked(True)
+        self.updateDialog(self.getFeature(self.currentFid))
+
+    def handle_editing_stopped(self):
+        self.editBT.setChecked(False)
+        self.updateDialog(self.getFeature(self.currentFid))
+
+    def toggle_editing(self):
+        if self.layer.isEditable():
+            if self.can_proceed():
+                self.layer.commitChanges()
+        else:
+            self.layer.startEditing()
+
+    def save_edits(self):
+        if self.layer.isEditable():
+            form = self.currentDialog.attributeForm()
+            form.save()
+            self.layer.commitChanges()
+            self.iface.messageBar().pushMessage("NavTable", self.tr("Changes saved successfully"), level=Qgis.Success)
 
     def handle_only_selected_changed(self):
         self.refresh_ids()
@@ -159,19 +186,16 @@ class NTMainPanel(QgsDockWidget):
             self.updateNFeatLB()
 
     def update_ui_states(self):
-        # Yellow background ONLY if the CURRENT feature is selected
         if self.currentFid in self.layer.selectedFeatureIds():
             self.currentFeatLB.setStyleSheet("background-color: #fdfd96; color: black;")
         else:
             self.currentFeatLB.setStyleSheet("")
 
-        # Filter button highlight if an expression is active or Only Selected is active
         if self.currentExpression != '' or self.onlySelectedCB.isChecked():
             self.exprFilterBT.setStyleSheet("background-color: #fdfd96; border: 1px solid #cca300;")
         else:
             self.exprFilterBT.setStyleSheet("")
 
-        # Sort button highlight if sorting is active
         if self.is_sorted:
             self.orderByBT.setStyleSheet("background-color: #b0e0e6; border: 1px solid #5f9ea0;")
         else:
@@ -201,12 +225,32 @@ class NTMainPanel(QgsDockWidget):
             self.iface.mapCanvas().setCenter(feat.geometry().centroid().asPoint())
             self.iface.mapCanvas().refresh()
 
+    def can_proceed(self):
+        if self.layer.isEditable() and self.layer.isModified():
+            reply = QMessageBox.question(self, self.tr('Unsaved Changes'),
+                                       self.tr('There are unsaved changes. Do you want to save them before proceeding?'),
+                                       QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel, QMessageBox.Save)
+            
+            if reply == QMessageBox.Save:
+                form = self.currentDialog.attributeForm()
+                form.save()
+                self.layer.commitChanges()
+                return True
+            elif reply == QMessageBox.Discard:
+                self.layer.rollBack()
+                return True
+            else:
+                return False
+        return True
+
     def change_layer(self, layer):
+        if not self.can_proceed(): 
+            self.layerCB.setLayer(self.layer)
+            return
         if layer and isinstance(layer, QgsVectorLayer):
-            # Disconnect previous signals
             try:
-                self.layer.editingStarted.disconnect(self.activateEdit)
-                self.layer.editingStopped.disconnect(self.deactivateEdit)
+                self.layer.editingStarted.disconnect(self.handle_editing_started)
+                self.layer.editingStopped.disconnect(self.handle_editing_stopped)
                 self.layer.selectionChanged.disconnect(self.update_select_button_state)
                 self.layer.selectionChanged.disconnect(self.updateNFeatLB)
                 self.layer.selectionChanged.disconnect(self.handle_selection_sync)
@@ -223,6 +267,8 @@ class NTMainPanel(QgsDockWidget):
                 self.zoomBT.clicked.disconnect(self.manual_zoom)
                 self.panBT.clicked.disconnect(self.manual_pan)
                 self.selectBT.clicked.disconnect(self.toggle_selection)
+                self.saveBT.clicked.disconnect(self.save_edits)
+                self.editBT.clicked.disconnect(self.toggle_editing)
                 self.selectCB.stateChanged.disconnect(self.update_ui_states)
                 self.onlySelectedCB.stateChanged.disconnect(self.handle_only_selected_changed)
             except:
@@ -238,34 +284,38 @@ class NTMainPanel(QgsDockWidget):
         self.validator.setRange(1, int(max.split(' ')[0]))
 
     def next(self):
+        if not self.can_proceed(): return
         newIndex = self.currentIndexFid + 1
         newFid = self.allIds[newIndex]
         self.update(newFid, newIndex)
 
     def previous(self):
+        if not self.can_proceed(): return
         newIndex = self.currentIndexFid - 1
         newFid = self.allIds[newIndex]
         self.update(newFid, newIndex)
 
     def last(self):
+        if not self.can_proceed(): return
         newIndex = len(self.allIds) - 1
         newFid = self.allIds[newIndex]
         self.update(newFid, newIndex)
 
     def first(self):
+        if not self.can_proceed(): return
         newIndex = 0
         newFid = self.allIds[newIndex]
         self.update(newFid, newIndex)
 
     def manual(self):
+        if not self.can_proceed(): return
         newIndex = int(self.currentFeatLB.text()) - 1
         newFid = self.allIds[newIndex]
         self.update(newFid, newIndex)
 
     def update(self, newFid, newIndex):
         feat = self.getFeature(newFid)
-        if not feat:
-            return
+        if not feat: return
         self.currentIndexFid = newIndex
         self.currentFid = newFid
         self.updateNFeatLB()
@@ -277,7 +327,6 @@ class NTMainPanel(QgsDockWidget):
     def updateCanvas(self, feat):
         if self.has_to_select():
             self.layer.selectByIds([self.currentFid])
-
         if self.has_to_zoom():
             self.manual_zoom()
         elif self.has_to_pan():
@@ -297,13 +346,11 @@ class NTMainPanel(QgsDockWidget):
         filtered_count = len(self.allIds)
         selected_count = self.layer.selectedFeatureCount()
         
-        # Show filter info ONLY if there is an active expression
-        if self.currentExpression != '':
+        if self.currentExpression != '' or self.onlySelectedCB.isChecked():
             max_label = "{} ({})".format(filtered_count, total_count)
         else:
             max_label = str(total_count)
             
-        # Append selected count in parentheses if any
         if selected_count > 0:
             max_label += " ({})".format(selected_count)
             self.removeFilterBT.setEnabled(True)
@@ -346,29 +393,15 @@ class NTMainPanel(QgsDockWidget):
         reply = QMessageBox.question(self, self.tr('Delete Feature'),
                                    self.tr('Are you sure you want to delete the current feature?'),
                                    QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if reply != QMessageBox.Yes: return
 
-        if reply != QMessageBox.Yes:
-            return
-
-        fid_to_delete = self.currentFid
-        
-        # Atomic delete operation
         self.layer.startEditing()
-        if self.layer.deleteFeature(fid_to_delete):
+        if self.layer.deleteFeature(self.currentFid):
             self.layer.commitChanges()
-            
-            if fid_to_delete in self.allIds:
-                self.allIds.remove(fid_to_delete)
-
-            if not self.allIds:
-                self.iface.messageBar().pushMessage("NavTable", self.tr("No more features in layer/filter"), level=Qgis.Info)
-                return
-
-            if self.currentIndexFid >= len(self.allIds):
-                self.currentIndexFid = len(self.allIds) - 1
-                
-            newFid = self.allIds[self.currentIndexFid]
-            self.update(newFid, self.currentIndexFid)
+            if self.currentFid in self.allIds: self.allIds.remove(self.currentFid)
+            if not self.allIds: return
+            if self.currentIndexFid >= len(self.allIds): self.currentIndexFid = len(self.allIds) - 1
+            self.update(self.allIds[self.currentIndexFid], self.currentIndexFid)
         else:
             self.layer.rollBack()
             self.iface.messageBar().pushMessage("NavTable", self.tr("Error deleting feature"), level=Qgis.Critical)
@@ -376,14 +409,12 @@ class NTMainPanel(QgsDockWidget):
     def filter_by_expression(self):
         dialog = NTExpressionBuilder(self.layer, self.currentExpression, self.iface)
         if dialog.exec_():
-            expression = dialog.expressionBuilder.expressionText()
-            self.filter(expression)
+            self.filter(dialog.expressionBuilder.expressionText())
 
     def filter_by_form(self):
         dialog = NTSelectByFormDialog(self.layer, self.iface)
         if dialog.exec_():
-            expression = dialog.expression
-            self.filter(expression)
+            self.filter(dialog.expression)
 
     def removeFilter(self):
         self.filter('')
@@ -395,13 +426,11 @@ class NTMainPanel(QgsDockWidget):
     def filter(self, expression):
         self.currentExpression = expression
         self.is_sorted = False
-        
         if self.currentExpression != '':
             self.removeFilterBT.setEnabled(True)
             self.setWindowTitle('NavTable - {} ({})'.format(self.layer.name(), self.tr('Filtered')))
         else:
             self.setWindowTitle('NavTable - ' + self.layer.name())
-
         self.refresh_ids()
 
     def orderBy(self):
@@ -413,8 +442,5 @@ class NTMainPanel(QgsDockWidget):
             self.allIds = [f.id() for f in feats]
             self.is_sorted = True
             self.removeFilterBT.setEnabled(True)
-
             self.currentIndexFid = 0
-            if self.allIds:
-                newFid = self.allIds[self.currentIndexFid]
-                self.update(newFid, self.currentIndexFid)
+            if self.allIds: self.update(self.allIds[self.currentIndexFid], self.currentIndexFid)

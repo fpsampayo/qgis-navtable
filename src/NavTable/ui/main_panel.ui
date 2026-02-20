@@ -283,6 +283,23 @@
         </widget>
        </item>
        <item>
+        <widget class="QToolButton" name="editBT">
+         <property name="toolTip">
+          <string>Toggle editing mode</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="saveBT">
+         <property name="toolTip">
+          <string>Save changes to current feature</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QToolButton" name="deleteBT">
          <property name="toolTip">
           <string>Delete current feature</string>
