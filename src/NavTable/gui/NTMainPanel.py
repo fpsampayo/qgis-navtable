@@ -368,22 +368,27 @@ class NTMainPanel(QgsDockWidget):
 
     def change_layer(self, layer):
         if not self.can_proceed(): 
+            self.layerCB.blockSignals(True)
             self.layerCB.setLayer(self.layer)
+            self.layerCB.blockSignals(False)
             return
-        if layer and isinstance(layer, QgsVectorLayer):
+            
+        if layer and isinstance(layer, QgsVectorLayer) and layer != self.layer:
+            self.layerCB.blockSignals(True)
+            # Safely disconnect layer signals
             try:
-                # Disconnect only layer-specific signals
                 self.layer.editingStarted.disconnect(self.handle_editing_started)
                 self.layer.editingStopped.disconnect(self.handle_editing_stopped)
                 self.layer.selectionChanged.disconnect(self.update_select_button_state)
                 self.layer.selectionChanged.disconnect(self.updateNFeatLB)
                 self.layer.selectionChanged.disconnect(self.handle_selection_sync)
-            except:
+            except (RuntimeError, TypeError):
                 pass
 
             self.currentExpression = ''
             self.is_sorted = False
             self.setup_layer(layer)
+            self.layerCB.blockSignals(False)
         
     def setCounters(self, current, max):
         self.currentFeatLB.setText(current)
@@ -496,11 +501,12 @@ class NTMainPanel(QgsDockWidget):
             self.firstBT.setEnabled(True)
 
     def updateDialog(self, feat):
-        if hasattr(self, 'currentDialog') and isinstance(self.currentDialog, QgsAttributeDialog):
-            self.currentDialog.accept()
-        self.currentDialog = QgsAttributeDialog(self.layer, feat, False, showDialogButtons=False)
-        self.currentDialog.setWindowFlag(Qt.Widget)
-        self.scrollArea.setWidget(self.currentDialog)
+        newDialog = QgsAttributeDialog(self.layer, feat, False, showDialogButtons=False)
+        newDialog.setWindowFlag(Qt.Widget)
+        
+        # QScrollArea::setWidget takes ownership and deletes the old one safely
+        self.scrollArea.setWidget(newDialog)
+        self.currentDialog = newDialog
 
     def deleteFeature(self):
         reply = QMessageBox.question(self, self.tr('Delete Feature'),
