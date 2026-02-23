@@ -86,27 +86,35 @@ class NTMainPanel(QgsDockWidget):
 
         # Apply global styling
         self.setStyleSheet("""
-            QFrame#headerFrame, QFrame#footerFrame {
-                background-color: rgba(128, 128, 128, 0.1);
-                border: 1px solid rgba(128, 128, 128, 0.2);
-                border-radius: 4px;
+            QFrame#optionsFrame {
+                background-color: rgba(128, 128, 128, 0.05);
+                border-top: 1px solid rgba(128, 128, 128, 0.15);
+                border-bottom: 1px solid rgba(128, 128, 128, 0.15);
+            }
+            QFrame#layerSelectorFrame {
+                background-color: palette(window);
+                border-top: 1px solid rgba(128, 128, 128, 0.15);
             }
             QToolButton {
                 border: 1px solid transparent;
-                border-radius: 3px;
-                padding: 1px;
-                margin: 0px;
+                border-radius: 2px;
+                padding: 3px;
+                margin: 1px;
                 background-color: transparent;
             }
             QToolButton:hover {
-                background-color: rgba(128, 128, 128, 0.2);
-                border: 1px solid rgba(128, 128, 128, 0.4);
+                background-color: rgba(128, 128, 128, 0.1);
+                border: 1px solid rgba(128, 128, 128, 0.2);
+            }
+            QToolButton:checked {
+                background-color: rgba(128, 128, 128, 0.15);
+                border: 1px solid rgba(128, 128, 128, 0.3);
             }
             QLineEdit#currentFeatLB {
-                border: 1px solid rgba(128, 128, 128, 0.5);
+                border: 1px solid rgba(128, 128, 128, 0.2);
                 border-radius: 2px;
+                padding: 1px;
                 background-color: palette(base);
-                color: palette(text);
             }
         """)
 
@@ -115,7 +123,7 @@ class NTMainPanel(QgsDockWidget):
         self.layerCB.setFilters(QgsMapLayerProxyModel.VectorLayer)
         self.layerCB.setLayer(self.layer)
         self.layerCB.layerChanged.connect(self.change_layer)
-        self.mainLayout.insertWidget(0, self.layerCB)
+        self.layerSelectorLayout.addWidget(self.layerCB)
 
         self.iface.currentLayerChanged.connect(self.handle_active_layer_changed)
 
