@@ -166,7 +166,15 @@ class NTMainPanel(QgsDockWidget):
         self.actionsToolbar.addWidget(self.saveBT)
         self.actionsToolbar.addWidget(self.deleteBT)
 
-        # Center and Add Toolbars to Layouts
+        # Align and Add Toolbars to Layouts
+        def add_left_aligned(widget, layout):
+            container = QWidget()
+            contLayout = QHBoxLayout(container)
+            contLayout.setContentsMargins(0, 0, 0, 0)
+            contLayout.addWidget(widget)
+            contLayout.addStretch()
+            layout.addWidget(container)
+
         def add_centered(widget, layout):
             container = QWidget()
             contLayout = QHBoxLayout(container)
@@ -177,7 +185,7 @@ class NTMainPanel(QgsDockWidget):
             layout.addWidget(container)
 
         add_centered(self.navToolbar, self.navToolbarLayout)
-        add_centered(self.actionsToolbar, self.actionsToolbarLayout)
+        add_left_aligned(self.actionsToolbar, self.actionsToolbarLayout)
 
         # Tooltips and Icons
         self.exprFilterBT.setToolTip(self.tr('Filter by Expression'))
@@ -262,7 +270,6 @@ class NTMainPanel(QgsDockWidget):
         self.updateNFeatLB() 
         
         self.deleteBT.setEnabled(not self.layer.readOnly())
-        self.deleteBT.setStyleSheet("background-color: #ffcccc; border: 1px solid red;")
         
         self.editBT.blockSignals(True)
         self.editBT.setChecked(self.layer.isEditable())
