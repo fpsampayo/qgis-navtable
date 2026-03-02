@@ -1,75 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0">
+<!DOCTYPE TS>
+<TS version="2.1">
 <context>
     <name>Dialog</name>
     <message>
         <location filename="../ui/expressionBuilderDialog.ui" line="17"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/main_panel.ui" line="54"/>
-        <source>Select</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/main_panel.ui" line="64"/>
-        <source>Pan</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/main_panel.ui" line="71"/>
-        <source>Zoom</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/main_panel.ui" line="92"/>
-        <source>Sort NavTable Features</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/main_panel.ui" line="114"/>
-        <source>Remove Filter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/main_panel.ui" line="136"/>
-        <source>Filter NavTable Features by Expression</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/main_panel.ui" line="181"/>
-        <source>&lt;&lt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/main_panel.ui" line="188"/>
-        <source>&lt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/main_panel.ui" line="202"/>
-        <source>0</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/main_panel.ui" line="214"/>
-        <source>/</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/main_panel.ui" line="229"/>
-        <source>&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/main_panel.ui" line="239"/>
-        <source>&gt;&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../ui/main_panel.ui" line="253"/>
-        <source>Delete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -102,8 +38,83 @@
 <context>
     <name>NTMainPanel</name>
     <message>
-        <location filename="../gui/NTMainPanel.py" line="272"/>
+        <location filename="../gui/NTMainPanel.py" line="565"/>
         <source>Filtered</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/NTMainPanel.py" line="191"/>
+        <source>Filter by Expression</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/NTMainPanel.py" line="192"/>
+        <source>Remove Filter/Selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/NTMainPanel.py" line="193"/>
+        <source>Sort Features</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/NTMainPanel.py" line="194"/>
+        <source>Zoom to Feature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/NTMainPanel.py" line="195"/>
+        <source>Pan to Feature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/NTMainPanel.py" line="196"/>
+        <source>Toggle Editing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/NTMainPanel.py" line="197"/>
+        <source>Save Changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/NTMainPanel.py" line="527"/>
+        <source>Delete Feature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/NTMainPanel.py" line="298"/>
+        <source>Changes saved successfully</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/NTMainPanel.py" line="344"/>
+        <source>Remove current feature from selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/NTMainPanel.py" line="347"/>
+        <source>Add current feature to selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/NTMainPanel.py" line="367"/>
+        <source>Unsaved Changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/NTMainPanel.py" line="367"/>
+        <source>There are unsaved changes. Do you want to save them before proceeding?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/NTMainPanel.py" line="527"/>
+        <source>Are you sure you want to delete the current feature?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/NTMainPanel.py" line="541"/>
+        <source>Error deleting feature</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -116,6 +127,31 @@
     </message>
 </context>
 <context>
-    <name>QgsAttributeForm</name>
+    <name>NavTableDockWidgetBase</name>
+    <message>
+        <location filename="../ui/main_panel.ui" line="14"/>
+        <source>NavTable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/main_panel.ui" line="93"/>
+        <source>Only selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/main_panel.ui" line="100"/>
+        <source>Select</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/main_panel.ui" line="107"/>
+        <source>Pan</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/main_panel.ui" line="114"/>
+        <source>Zoom</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>
