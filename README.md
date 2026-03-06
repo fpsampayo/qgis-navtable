@@ -18,6 +18,6 @@ Features:
 * Sort features
 
 ## Try in a dockerized qgis. 
-Inside the docker folder you can run `docker compsoe up -d` to start navTable in qgis 3.44.
-You can change the qgis version editing the `docker-compose.yml` file, line 3, to a existing version on  https://hub.docker.com/r/qgis/qgis/tags
+Inside the docker folder you can run `start_qgis.sh` to start navTable in qgis 3.44.
+You can change the qgis version editing the `docker-compose.yml` file, line 3, to a existing version on https://hub.docker.com/r/qgis/qgis/tags
 
