@@ -3,8 +3,8 @@
 name=Navtable
 qgisMinimumVersion=3.0
 description=NavTable is a QGIS plugin to view in a agile way the records of vectorial geographical information layers.
-version=0.1.1
-author=Francisco Puga, Francisco P. Sampayo
+version=0.2.0
+author=Francisco Puga, Francisco P. Sampayo, Pablo Sanxiao
 email=fpsampayo@gmail.com
 about=
     Its main characteristic is that allows to see the element's attributes one by one and in vertical direction.
@@ -18,6 +18,7 @@ about=
 changelog=
     13.02.2019 v0.1: First version
     13.03.2019 v0.1.1: Fix icon size and unifies filters on one window
+    06.03.2026 v0.2.0: First Stable version by psanxiao
 
 # tags are comma separated with spaces allowed
 tags=vector, table, forms, filter

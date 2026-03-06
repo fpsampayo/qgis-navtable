@@ -24,7 +24,7 @@ import os.path
 
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
-from qgis.PyQt.QtCore import QObject, QSettings, QTranslator, qVersion, QCoreApplication
+from qgis.PyQt.QtCore import QObject, QSettings, QTranslator, qVersion, QCoreApplication, Qt
 from qgis.core import Qgis
 from qgis.core import QgsVectorLayer
 
@@ -37,6 +37,7 @@ class NavTablePlugin(QObject):
         super().__init__()
         # Save reference to the QGIS interface
         self.iface = iface
+        self.dock = None
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
         # initialize locale
@@ -72,13 +73,14 @@ class NavTablePlugin(QObject):
 
         self.layer = self.iface.activeLayer()
 
-        # Comprobamos si existe alguna capa y si esta es vectorial
+        # Checking if a vector layer exists
         if self.layer is None or not isinstance(self.layer, QgsVectorLayer):
             self.iface.messageBar().pushMessage("Invalid Layer",
                                                 "NavTable only works on a vector layer",
                                                 level=Qgis.Warning)
         else:
-            self.dlg = NTMainPanel(self.iface, self.layer)
-            self.dlg.show()
-
-            self.dlg.exec_()
+            if self.dock is None:
+                self.dock = NTMainPanel(self.iface, self.layer, self.iface.mainWindow())
+                self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dock)
+            else:
+                self.dock.show()

@@ -1,262 +1,203 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
+ <class>NavTableDockWidgetBase</class>
+ <widget class="QWidget" name="NavTableDockWidgetBase">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>424</width>
-    <height>193</height>
+    <height>400</height>
    </rect>
   </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>16777215</width>
-    <height>16777215</height>
-   </size>
-  </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>NavTable</string>
   </property>
-  <property name="sizeGripEnabled">
-   <bool>false</bool>
-  </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="mainLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <property name="sizeConstraint">
-      <enum>QLayout::SetDefaultConstraint</enum>
+    <layout class="QVBoxLayout" name="actionsToolbarLayout">
+     <property name="spacing">
+      <number>0</number>
      </property>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <property name="spacing">
-        <number>6</number>
-       </property>
-       <property name="topMargin">
-        <number>10</number>
-       </property>
-       <item alignment="Qt::AlignHCenter">
-        <widget class="QCheckBox" name="selectCB">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
-         <property name="text">
-          <string>Select</string>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item alignment="Qt::AlignHCenter">
-        <widget class="QCheckBox" name="panCB">
-         <property name="text">
-          <string>Pan</string>
-         </property>
-        </widget>
-       </item>
-       <item alignment="Qt::AlignHCenter">
-        <widget class="QCheckBox" name="zoomCB">
-         <property name="text">
-          <string>Zoom</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_4">
-         <item>
-          <widget class="QToolButton" name="orderByBT">
-           <property name="maximumSize">
-            <size>
-             <width>23</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="mouseTracking">
-            <bool>true</bool>
-           </property>
-           <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
-           </property>
-           <property name="toolTip">
-            <string>Sort NavTable Features</string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="removeFilterBT">
-           <property name="maximumSize">
-            <size>
-             <width>23</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="mouseTracking">
-            <bool>true</bool>
-           </property>
-           <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
-           </property>
-           <property name="toolTip">
-            <string>Remove Filter</string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="exprFilterBT">
-           <property name="maximumSize">
-            <size>
-             <width>23</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="mouseTracking">
-            <bool>true</bool>
-           </property>
-           <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
-           </property>
-           <property name="toolTip">
-            <string>Filter NavTable Features by Expression</string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <widget class="QScrollArea" name="scrollArea">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="widgetResizable">
-        <bool>true</bool>
-       </property>
-       <widget class="QWidget" name="widget_form">
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>404</width>
-          <height>70</height>
-         </rect>
+    </layout>
+   </item>
+   <item>
+    <widget class="QFrame" name="layerSelectorFrame">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <layout class="QVBoxLayout" name="layerSelectorLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>4</number>
+      </property>
+      <property name="topMargin">
+       <number>2</number>
+      </property>
+      <property name="rightMargin">
+       <number>4</number>
+      </property>
+      <property name="bottomMargin">
+       <number>2</number>
+      </property>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="optionsFrame">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <layout class="QHBoxLayout" name="optionsLayout">
+      <property name="spacing">
+       <number>8</number>
+      </property>
+      <property name="leftMargin">
+       <number>6</number>
+      </property>
+      <property name="topMargin">
+       <number>4</number>
+      </property>
+      <property name="rightMargin">
+       <number>6</number>
+      </property>
+      <property name="bottomMargin">
+       <number>4</number>
+      </property>
+      <item>
+       <widget class="QCheckBox" name="onlySelectedCB">
+        <property name="text">
+         <string>Only selected</string>
         </property>
        </widget>
-      </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QPushButton" name="firstBT">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="text">
-          <string>&lt;&lt;</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="previousBT">
-         <property name="text">
-          <string>&lt;</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QGridLayout" name="gridLayout">
-         <item row="0" column="2">
-          <widget class="QLabel" name="nFeatLB">
-           <property name="font">
-            <font>
-             <pointsize>8</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>0</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLabel" name="label">
-           <property name="font">
-            <font>
-             <pointsize>8</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>/</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLineEdit" name="currentFeatLB"/>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QPushButton" name="nextBT">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="text">
-          <string>&gt;</string>
-         </property>
-         <property name="checkable">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="lastBT">
-         <property name="text">
-          <string>&gt;&gt;</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QPushButton" name="deleteBT">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>Delete</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="selectCB">
+        <property name="text">
+         <string>Select</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="panCB">
+        <property name="text">
+         <string>Pan</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="zoomCB">
+        <property name="text">
+         <string>Zoom</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="spacer_options">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="line_separator">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>1</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>1</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgba(128, 128, 128, 0.15);</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer_above_nav">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::Fixed</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="navToolbarLayout">
+     <property name="spacing">
+      <number>0</number>
+     </property>
     </layout>
+   </item>
+   <item>
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <widget class="QWidget" name="widget_form">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>424</width>
+        <height>250</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
    </item>
   </layout>
  </widget>
